@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ভাত ঘর হোটেল রেস্টুরেন্ট</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        
+        // Lucide Icons Component Wrapper
+        const Icon = ({ name, ...props }) => {
+            const iconName = name.charAt(0).toUpperCase() + name.slice(1);
+            // In standalone mode, lucide icons are injected as SVGs, so we might need a workaround or use simpler SVGs.
+            // For simplicity in this HTML version, we will use text labels or emojis if icons don't load easily, 
+            // BUT Lucide has a createIcons method.
+            
+            // For React via CDN, using icons can be tricky. Let's use Emojis for simplicity and speed on mobile.
+            return null; 
+        };
+
+        // Simplified App for Mobile HTML Version
+        const App = () => {
+            const [isMenuOpen, setIsMenuOpen] = useState(false);
+            const [activeCategory, setActiveCategory] = useState('all');
+            const [formData, setFormData] = useState({ name: '', phone: '', address: '', details: '' });
+
+            const phoneNumber = "8801336613481";
+
+            const handleOrder = (item) => {
+                const text = `আসসালামু আলাইকুম, আমি "${item.name}" (দাম: ৳${item.price}) অর্ডার করতে চাই।`;
+                window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`, '_blank');
+            };
+
+            const handleCustomOrder = (e) => {
+                e.preventDefault();
+                const text = `*নতুন অর্ডার*\nনাম: ${formData.name}\nফোন: ${formData.phone}\nঠিকানা: ${formData.address}\nঅর্ডার: ${formData.details}`;
+                window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`, '_blank');
+            };
+
+            const categories = [
+                { id: 'all', name: 'সব খাবার', icon: '🍽️' },
+                { id: 'special', name: 'স্পেশাল', icon: '🔥' },
+                { id: 'rice', name: 'ভাত-বিরিয়ানি', icon: '🍚' },
+                { id: 'meat', name: 'মাংস', icon: '🍗' },
+                { id: 'fish', name: 'মাছ', icon: '🐟' },
+                { id: 'dessert', name: 'মিষ্টান্ন', icon: '🧁' }
+            ];
+
+            const menuItems = [
+                { id: 1, name: 'হাঁস স্পেশাল', price: 300, category: 'special', image: 'https://placehold.co/300x200/ff6b35/ffffff?text=হাঁস+ভুনা', desc: 'হাঁস ভুনা + খিচুড়ি + সালাদ' },
+                { id: 2, name: 'মেজবানি মাংস', price: 350, category: 'special', image: 'https://placehold.co/300x200/f7931e/ffffff?text=মেজবানি', desc: 'বিফ + ডাল + নেহারি' },
+                { id: 3, name: 'কাচ্চি বিরিয়ানি', price: 300, category: 'rice', image: 'https://placehold.co/300x200/a855f7/ffffff?text=কাচ্চি', desc: 'স্পেশাল কাচ্চি' },
+                { id: 4, name: 'সাদা ভাত', price: 15, category: 'rice', image: 'https://placehold.co/300x200/4ade80/ffffff?text=ভাত', desc: 'মিনিকেট চালের ভাত' },
+                { id: 17, name: 'রসমালাই', price: 450, category: 'dessert', image: 'https://placehold.co/300x200/fbbf24/ffffff?text=রসমালাই', desc: 'খাঁটি রসমালাই (১ কেজি)' }
+            ];
+
+            const filteredItems = activeCategory === 'all' ? menuItems : menuItems.filter(i => i.category === activeCategory);
+
+            return (
+                <div className="min-h-screen">
+                    {/* Navbar */}
+                    <nav className="bg-white shadow sticky top-0 z-50 px-4 py-3 flex justify-between items-center">
+                        <div className="flex items-center gap-2 font-bold text-xl text-red-600">
+                            <div className="w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center">ভ</div>
+                            ভাত ঘর
+                        </div>
+                        <div className="flex gap-4">
+                            <a href="tel:+8801336613481" className="p-2 text-green-600">📞</a>
+                            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden p-2">☰</button>
+                        </div>
+                    </nav>
+                    
+                    {/* Mobile Menu */}
+                    {isMenuOpen && (
+                        <div className="bg-white border-b p-4 flex flex-col gap-2 md:hidden">
+                            <a href="#home" onClick={() => setIsMenuOpen(false)}>হোম</a>
+                            <a href="#menu" onClick={() => setIsMenuOpen(false)}>মেনু</a>
+                            <a href="#contact" onClick={() => setIsMenuOpen(false)}>যোগাযোগ</a>
+                        </div>
+                    )}
+
+                    {/* Hero */}
+                    <header id="home" className="bg-gradient-to-r from-red-600 to-red-800 text-white py-16 text-center px-4">
+                        <h1 className="text-3xl font-bold mb-4">ভাত ঘর হোটেল রেস্টুরেন্ট</h1>
+                        <p className="mb-6">নোয়াখালীর ঐতিহ্যবাহী স্বাদের সমাহার</p>
+                        <a href="#menu" className="bg-white text-red-600 px-6 py-2 rounded-full font-bold">মেনু দেখুন</a>
+                    </header>
+
+                    {/* Menu Tabs */}
+                    <section id="menu" className="py-10 px-4 max-w-6xl mx-auto">
+                        <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">আমাদের মেনু</h2>
+                        <div className="flex flex-wrap justify-center gap-2 mb-8">
+                            {categories.map(cat => (
+                                <button 
+                                    key={cat.id}
+                                    onClick={() => setActiveCategory(cat.id)}
+                                    className={`px-4 py-2 rounded-full border ${activeCategory === cat.id ? 'bg-red-600 text-white' : 'bg-white text-gray-700'}`}
+                                >
+                                    {cat.icon} {cat.name}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Items Grid */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {filteredItems.map(item => (
+                                <div key={item.id} className="bg-white rounded-lg shadow overflow-hidden border">
+                                    <img src={item.image} alt={item.name} className="w-full h-40 object-cover"/>
+                                    <div className="p-4">
+                                        <div className="flex justify-between items-center mb-2">
+                                            <h3 className="font-bold text-lg">{item.name}</h3>
+                                            <span className="bg-red-100 text-red-700 px-2 py-1 rounded text-sm font-bold">৳{item.price}</span>
+                                        </div>
+                                        <p className="text-gray-500 text-sm mb-4">{item.desc}</p>
+                                        <button onClick={() => handleOrder(item)} className="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700">
+                                            অর্ডার করুন (WhatsApp)
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    {/* Contact Form */}
+                    <section id="contact" className="py-10 bg-gray-100 px-4">
+                        <div className="max-w-lg mx-auto bg-white p-6 rounded-lg shadow">
+                            <h2 className="text-2xl font-bold mb-4 text-center">সরাসরি অর্ডার পাঠান</h2>
+                            <form onSubmit={handleCustomOrder} className="space-y-3">
+                                <input className="w-full border p-2 rounded" placeholder="আপনার নাম" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required />
+                                <input className="w-full border p-2 rounded" placeholder="মোবাইল নম্বর" type="tel" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} required />
+                                <textarea className="w-full border p-2 rounded" placeholder="ঠিকানা" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} required></textarea>
+                                <textarea className="w-full border p-2 rounded" placeholder="কি কি লাগবে লিখুন..." value={formData.details} onChange={e => setFormData({...formData, details: e.target.value})} required></textarea>
+                                <button className="w-full bg-green-600 text-white py-3 rounded font-bold">অর্ডার কনফার্ম করুন</button>
+                            </form>
+                        </div>
+                    </section>
+
+                    <footer className="bg-gray-800 text-white text-center py-6 mt-10">
+                        <p>© ২০২৬ ভাত ঘর হোটেল রেস্টুরেন্ট</p>
+                        <p className="text-sm text-gray-400">মাইজদী, নোয়াখালী | ০১৩৩৬-৬১৩৪৮১</p>
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
