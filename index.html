@@ -7,17 +7,18 @@
 
   <!-- SEO Meta Tags -->
   <meta name="description" content="ভাত ঘর - নোয়াখালীর সেরা রেস্টুরেন্ট। স্পেশাল বিরিয়ানি, খিচুড়ি, হাঁসের মাংস এবং ঐতিহ্যবাহী মিষ্টান্ন। হোম ডেলিভারি সেবা উপলব্ধ।" />
-  <meta name="keywords" content="নোয়াখালী রেস্টুরেন্ট, বিরিয়ানি, খিচুড়ি, মিষ্টান্ন, হোম ডেলিভারি, ভাত ঘর" />
+  <meta name="keywords" content="নোয়াখালী রেস্টুরেন্ট, বিরিয়ানি, খিচুড়ি, মিষ্টান্ন, হোম ডেলিভারি, ভাত ঘর, অনলাইন খাবার অর্ডার" />
   <meta name="author" content="ভাত ঘর হোটেল রেস্টুরেন্ট" />
+  <meta name="robots" content="index, follow" />
 
   <!-- Open Graph Meta Tags -->
   <meta property="og:title" content="ভাত ঘর হোটেল রেস্টুরেন্ট এন্ড মিষ্টান্ন" />
-  <meta property="og:description" content="নোয়াখালীর স্বাদে স্বাদিষ্ট খাবার এবং ঐতিহ্যবাহী মিষ্টান্ন। হোম ডেলিভারি সেবা।" />
+  <meta property="og:description" content="নোয়াখালীর স্বাদে স্বাদিষ্ট খাবার এবং ঐতিহ্যবাহী মিষ্টান্ন। হোম ডেলিভারি সেবা। বিকাশ ও নগদে পেমেন্ট সুবিধা।" />
   <meta property="og:image" content="https://i.ibb.co/vCm5Mz6Q/IMG-1612.jpg" />
   <meta property="og:url" content="https://www.vatghorhotelonline.com" />
   <meta property="og:type" content="restaurant" />
 
-  <!-- Font Awesome Icons (Stable & Fast) -->
+  <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
   <!-- Tailwind CSS -->
@@ -30,23 +31,19 @@
   <!-- Babel for JSX -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-  <style>
-    body {
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      scroll-behavior: smooth;
-    }
-    /* Smooth animations */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .fade-in { animation: fadeIn 0.6s ease-out; }
+  <!-- SweetAlert2 for beautiful alerts -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    @keyframes float {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-10px); }
-    }
+  <style>
+    body { font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; scroll-behavior: smooth; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .fade-in { animation: fadeIn 0.6s ease-out; }
+    @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
     .float-animation { animation: float 3s ease-in-out infinite; }
+
+    /* Order tracking animation */
+    @keyframes pulse-ring { 0% { transform: scale(0.33); } 80%, 100% { opacity: 0; } }
+    .pulse-ring { position: absolute; width: 100%; height: 100%; border-radius: 50%; animation: pulse-ring 1.25s cubic-bezier(0.215, 0.61, 0.355, 1) infinite; box-shadow: 0 0 0 6px rgba(239, 68, 68, 0.4); top: 0; left: 0; }
   </style>
 </head>
 
@@ -59,22 +56,59 @@
     const App = () => {
       const [isMenuOpen, setIsMenuOpen] = useState(false);
       const [activeCategory, setActiveCategory] = useState("all");
-      const [formData, setFormData] = useState({ name: "", phone: "", address: "", details: "" });
+      const [formData, setFormData] = useState({ name: "", phone: "", address: "", details: "", payment: "cod" });
       const [showFloatingButton, setShowFloatingButton] = useState(false);
+      const [favorites, setFavorites] = useState([]);
+      const [showOrderTracking, setShowOrderTracking] = useState(false);
+      const [orderStatus, setOrderStatus] = useState(0); // 0: Pending, 1: Preparing, 2: On Way, 3: Delivered
 
       const phoneNumber = "8801336613481";
       const facebookPageUrl = "https://www.facebook.com/share/1BFJVsuQf9/?mibextid=wwXIfr";
 
+      // Load favorites from local storage
       useEffect(() => {
+        const savedFavs = localStorage.getItem('vatghor_favorites');
+        if (savedFavs) setFavorites(JSON.parse(savedFavs));
+
         const handleScroll = () => setShowFloatingButton(window.scrollY > 300);
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
       }, []);
 
+      const toggleFavorite = (itemId) => {
+        let newFavs;
+        if (favorites.includes(itemId)) {
+          newFavs = favorites.filter(id => id !== itemId);
+          Swal.fire({ icon: 'success', title: 'Removed', text: 'প্রিয় খাবার তালিকা থেকে সরানো হয়েছে', timer: 1500, showConfirmButton: false });
+        } else {
+          newFavs = [...favorites, itemId];
+          Swal.fire({ icon: 'success', title: 'Saved!', text: 'প্রিয় খাবার তালিকায় যোগ করা হয়েছে ❤️', timer: 1500, showConfirmButton: false });
+        }
+        setFavorites(newFavs);
+        localStorage.setItem('vatghor_favorites', JSON.stringify(newFavs));
+      };
+
       const handleOrder = (item) => {
         const priceText = typeof item.price === "number" ? `৳${item.price}` : item.price;
-        const text = `আসসালামু আলাইকুম, আমি "${item.name}" (দাম: ${priceText}) অর্ডার করতে চাই।`;
-        window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`, "_blank");
+        Swal.fire({
+          title: 'অর্ডার কনফার্মেশন',
+          html: `
+            <div class="text-left">
+              <p class="font-bold mb-2">${item.name}</p>
+              <p class="mb-4">দাম: ${priceText}</p>
+              <p class="text-sm text-gray-600 mb-2">ডেলিভারি সময়: ৩০-৪৫ মিনিট</p>
+            </div>
+          `,
+          showCancelButton: true,
+          confirmButtonText: 'অর্ডার করুন (WhatsApp)',
+          cancelButtonText: 'বন্ধ করুন',
+          confirmButtonColor: '#22c55e'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            const text = `আসসালামু আলাইকুম, আমি "${item.name}" (দাম: ${priceText}) অর্ডার করতে চাই। পেমেন্ট: ক্যাশ অন ডেলিভারি`;
+            window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`, "_blank");
+          }
+        });
       };
 
       const handleQuickOrder = () => {
@@ -86,9 +120,22 @@
 
       const handleCustomOrder = (e) => {
         e.preventDefault();
-        const text = `*নতুন অর্ডার রিকোয়েস্ট*\n------------------\nনাম: ${formData.name}\nফোন: ${formData.phone}\nঠিকানা: ${formData.address}\nঅর্ডার ডিটেইলস: ${formData.details}`;
+
+        // Payment method handling
+        let paymentText = "Cash on Delivery";
+        if (formData.payment === "bkash") paymentText = "bKash Payment";
+        if (formData.payment === "nagad") paymentText = "Nagad Payment";
+
+        const text = `*নতুন অর্ডার রিকোয়েস্ট*\n------------------\nনাম: ${formData.name}\nফোন: ${formData.phone}\nঠিকানা: ${formData.address}\nঅর্ডার ডিটেইলস: ${formData.details}\nপেমেন্ট মেথড: ${paymentText}`;
+
         window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`, "_blank");
-        setFormData({ name: "", phone: "", address: "", details: "" });
+
+        // Simulate order tracking start
+        setShowOrderTracking(true);
+        setOrderStatus(1);
+        Swal.fire({ icon: 'success', title: 'অর্ডার পাঠানো হয়েছে!', text: 'আপনার অর্ডারটি প্রসেসিং হচ্ছে।', timer: 2000 });
+
+        setFormData({ name: "", phone: "", address: "", details: "", payment: "cod" });
       };
 
       // Placeholder image helper
@@ -96,26 +143,26 @@
         `https://placehold.co/${w}x${h}/e5e7eb/374151?text=${encodeURIComponent(text)}`;
 
       const menuItems = [
-        { id: 1, name: "শীতকালীন হাঁস স্পেশাল", price: 300, category: "special", image: ph("হাঁস ভুনা"), description: "হাঁস ভুনা + খিচুড়ি + সালাদ + ড্রিংকস + পানি" },
-        { id: 2, name: "শুক্রবার মেজবানি স্পেশাল", price: 350, category: "special", image: ph("মেজবানি"), description: "বিফ + রাইস + চনার ডাল + নেহারি + সালাদ + ড্রিংকস + পানি" },
-        { id: 3, name: "সাদা ভাত", price: 15, category: "rice", image: ph("সাদা ভাত"), description: "ফ্রেশ ও সুগন্ধি সাদা ভাত" },
-        { id: 4, name: "মোরগ পোলাউ", price: 160, category: "rice", image: ph("মোরগ পোলাউ"), description: "মসলাদার মোরগ পোলাউ" },
-        { id: 5, name: "স্পেশাল কাচ্চি", price: 300, category: "rice", image: ph("কাচ্চি"), description: "স্পেশাল কাচ্চি বিরিয়ানি" },
-        { id: 6, name: "বিফ খিচুড়ি", price: 280, category: "rice", image: ph("বিফ খিচুড়ি"), description: "বিফ খিচুড়ি" },
-        { id: 7, name: "চিকেন খিচুড়ি", price: 180, category: "rice", image: ph("চিকেন খিচুড়ি"), description: "চিকেন খিচুড়ি" },
-        { id: 8, name: "মাটন খিচুড়ি", price: 300, category: "rice", image: ph("মাটন খিচুড়ি"), description: "মাটন খিচুড়ি" },
-        { id: 9, name: "বিফ ভুনা", price: 200, category: "meat", image: ph("বিফ ভুনা"), description: "মসলাদার বিফ ভুনা" },
-        { id: 10, name: "বিফ কালা ভুনা", price: 220, category: "meat", image: ph("কালা ভুনা"), description: "কালা ভুনা" },
-        { id: 11, name: "চিকেন রোস্ট", price: 120, category: "meat", image: ph("চিকেন রোস্ট"), description: "চিকেন রোস্ট" },
-        { id: 12, name: "চিকেন চাপ", price: 150, category: "meat", image: ph("চিকেন চাপ"), description: "চিকেন চাপ" },
-        { id: 13, name: "ইলিশ", price: "বাজার দর", category: "fish", image: ph("ইলিশ"), description: "তাজা ইলিশ মাছ" },
-        { id: 14, name: "ভর্তা", price: 20, category: "side", image: ph("ভর্তা"), description: "মাছ/শুটকি/শিম ভর্তা" },
-        { id: 15, name: "আলু ভর্তা", price: 10, category: "side", image: ph("আলু ভর্তা"), description: "আলু ভর্তা" },
-        { id: 16, name: "পরটা", price: 15, category: "bread", image: ph("পরটা"), description: "পরটা" },
-        { id: 17, name: "রসমালাই", price: 450, category: "dessert", image: ph("রসমালাই"), description: "রসমালাই (কেজি)" },
-        { id: 18, name: "রসগোল্লা", price: 380, category: "dessert", image: ph("রসগোল্লা"), description: "রসগোল্লা" },
-        { id: 19, name: "কালোজাম", price: 350, category: "dessert", image: ph("কালোজাম"), description: "কালোজাম" },
-        { id: 20, name: "দধি", price: 300, category: "dessert", image: ph("দধি"), description: "দধি" }
+        { id: 1, name: "শীতকালীন হাঁস স্পেশাল", price: 300, category: "special", image: ph("হাঁস ভুনা"), description: "হাঁস ভুনা + খিচুড়ি + সালাদ + ড্রিংকস + পানি", time: "45 min" },
+        { id: 2, name: "শুক্রবার মেজবানি স্পেশাল", price: 350, category: "special", image: ph("মেজবানি"), description: "বিফ + রাইস + চনার ডাল + নেহারি + সালাদ + ড্রিংকস + পানি", time: "50 min" },
+        { id: 3, name: "সাদা ভাত", price: 15, category: "rice", image: ph("সাদা ভাত"), description: "ফ্রেশ ও সুগন্ধি সাদা ভাত", time: "20 min" },
+        { id: 4, name: "মোরগ পোলাউ", price: 160, category: "rice", image: ph("মোরগ পোলাউ"), description: "মসলাদার মোরগ পোলাউ", time: "30 min" },
+        { id: 5, name: "স্পেশাল কাচ্চি", price: 300, category: "rice", image: ph("কাচ্চি"), description: "স্পেশাল কাচ্চি বিরিয়ানি", time: "35 min" },
+        { id: 6, name: "বিফ খিচুড়ি", price: 280, category: "rice", image: ph("বিফ খিচুড়ি"), description: "বিফ খিচুড়ি", time: "30 min" },
+        { id: 7, name: "চিকেন খিচুড়ি", price: 180, category: "rice", image: ph("চিকেন খিচুড়ি"), description: "চিকেন খিচুড়ি", time: "30 min" },
+        { id: 8, name: "মাটন খিচুড়ি", price: 300, category: "rice", image: ph("মাটন খিচুড়ি"), description: "মাটন খিচুড়ি", time: "40 min" },
+        { id: 9, name: "বিফ ভুনা", price: 200, category: "meat", image: ph("বিফ ভুনা"), description: "মসলাদার বিফ ভুনা", time: "30 min" },
+        { id: 10, name: "বিফ কালা ভুনা", price: 220, category: "meat", image: ph("কালা ভুনা"), description: "কালা ভুনা", time: "35 min" },
+        { id: 11, name: "চিকেন রোস্ট", price: 120, category: "meat", image: ph("চিকেন রোস্ট"), description: "চিকেন রোস্ট", time: "25 min" },
+        { id: 12, name: "চিকেন চাপ", price: 150, category: "meat", image: ph("চিকেন চাপ"), description: "চিকেন চাপ", time: "25 min" },
+        { id: 13, name: "ইলিশ", price: "বাজার দর", category: "fish", image: ph("ইলিশ"), description: "তাজা ইলিশ মাছ", time: "40 min" },
+        { id: 14, name: "ভর্তা", price: 20, category: "side", image: ph("ভর্তা"), description: "মাছ/শুটকি/শিম ভর্তা", time: "15 min" },
+        { id: 15, name: "আলু ভর্তা", price: 10, category: "side", image: ph("আলু ভর্তা"), description: "আলু ভর্তা", time: "15 min" },
+        { id: 16, name: "পরটা", price: 15, category: "bread", image: ph("পরটা"), description: "পরটা", time: "15 min" },
+        { id: 17, name: "রসমালাই", price: 450, category: "dessert", image: ph("রসমালাই"), description: "রসমালাই (কেজি)", time: "Instant" },
+        { id: 18, name: "রসগোল্লা", price: 380, category: "dessert", image: ph("রসগোল্লা"), description: "রসগোল্লা", time: "Instant" },
+        { id: 19, name: "কালোজাম", price: 350, category: "dessert", image: ph("কালোজাম"), description: "কালোজাম", time: "Instant" },
+        { id: 20, name: "দধি", price: 300, category: "dessert", image: ph("দধি"), description: "দধি", time: "Instant" }
       ];
 
       const categories = [
@@ -130,6 +177,9 @@
       ];
 
       const filteredItems = activeCategory === "all" ? menuItems : menuItems.filter((item) => item.category === activeCategory);
+
+      // Filter only saved favorites
+      const savedItems = menuItems.filter(item => favorites.includes(item.id));
 
       const specialOffers = [
         { id: 1, name: "শীতকালীন হাঁস স্পেশাল", price: 300, description: "হাঁস ভুনা + খিচুড়ি + সালাদ + ড্রিংকস + পানি", image: ph("হাঁস স্পেশাল", 900, 500) },
@@ -156,7 +206,7 @@
                   <a href="#home" className="text-gray-900 hover:text-red-600 font-medium">হোম</a>
                   <a href="#menu" className="text-gray-700 hover:text-red-600">মেনু</a>
                   <a href="#specials" className="text-gray-700 hover:text-red-600">অফার</a>
-                  <a href="#reviews" className="text-gray-700 hover:text-red-600">রিভিউ</a>
+                  {favorites.length > 0 && <a href="#favorites" className="text-red-600 font-bold">প্রিয় খাবার ({favorites.length})</a>}
                   <a href="#contact" className="text-gray-700 hover:text-red-600">যোগাযোগ</a>
                 </nav>
 
@@ -165,7 +215,7 @@
                   <a href={`tel:${phoneNumber}`} className="p-2 text-gray-700 hover:text-red-600">
                     <i className="fas fa-phone h-5 w-5 text-xl"></i>
                   </a>
-                  <button onClick={handleQuickOrder} className="p-2 text-gray-700 hover:text-red-600">
+                  <button onClick={handleQuickOrder} className="p-2 text-gray-700 hover:text-red-600 relative">
                     <i className="fas fa-shopping-cart h-5 w-5 text-xl"></i>
                   </button>
                   <button className="md:hidden p-2 text-gray-700" onClick={() => setIsMenuOpen(!isMenuOpen)}>
@@ -181,7 +231,7 @@
                     <a href="#home" className="text-gray-900 hover:text-red-600 font-medium" onClick={() => setIsMenuOpen(false)}>হোম</a>
                     <a href="#menu" className="text-gray-700 hover:text-red-600" onClick={() => setIsMenuOpen(false)}>মেনু</a>
                     <a href="#specials" className="text-gray-700 hover:text-red-600" onClick={() => setIsMenuOpen(false)}>অফার</a>
-                    <a href="#reviews" className="text-gray-700 hover:text-red-600" onClick={() => setIsMenuOpen(false)}>রিভিউ</a>
+                    {favorites.length > 0 && <a href="#favorites" className="text-red-600 font-bold" onClick={() => setIsMenuOpen(false)}>প্রিয় খাবার ({favorites.length})</a>}
                     <a href="#contact" className="text-gray-700 hover:text-red-600" onClick={() => setIsMenuOpen(false)}>যোগাযোগ</a>
                   </nav>
                 </div>
@@ -202,18 +252,46 @@
               <h1 className="text-4xl md:text-5xl font-bold mb-6 fade-in">ভাত ঘর হোটেল রেস্টুরেন্ট</h1>
               <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto fade-in">নোয়াখালীর সেরা স্বাদের গন্তব্য</p>
 
-              <div className="flex items-center justify-center gap-2 mb-8 text-yellow-300">
+              <div className="flex items-center justify-center gap-2 mb-8 text-yellow-300 bg-red-800 bg-opacity-30 p-3 rounded-lg inline-block">
                 <i className="fas fa-clock"></i>
-                <span className="font-semibold">খোলা: সকাল ৮:০০ - রাত ১০:০০</span>
+                <span className="font-bold text-lg">খোলা: সকাল ৭:০০ - রাত ১২:০০</span>
               </div>
 
               <div className="flex justify-center gap-4">
                 <a href="#contact" className="bg-white text-red-600 px-8 py-3 rounded-lg font-bold hover:bg-gray-100 shadow-lg">অর্ডার করুন</a>
                 <a href="#menu" className="border-2 border-white text-white px-8 py-3 rounded-lg font-bold hover:bg-white hover:text-red-600">মেনু</a>
               </div>
-              <p className="mt-6 text-yellow-300 font-semibold">www.vatghorhotelonline.com</p>
             </div>
           </section>
+
+          {/* Order Tracking (Demo) */}
+          {showOrderTracking && (
+            <section className="py-8 bg-blue-50">
+              <div className="max-w-3xl mx-auto px-4">
+                <div className="bg-white p-6 rounded-lg shadow-md">
+                  <h3 className="text-xl font-bold mb-4 text-center">আপনার অর্ডার স্ট্যাটাস</h3>
+                  <div className="flex justify-between relative">
+                    <div className="absolute top-1/2 w-full h-1 bg-gray-200 -z-0"></div>
+                    <div className="absolute top-1/2 w-1/3 h-1 bg-green-500 -z-0"></div>
+
+                    <div className="relative z-10 text-center">
+                      <div className="w-10 h-10 bg-green-500 text-white rounded-full flex items-center justify-center mx-auto mb-2"><i className="fas fa-check"></i></div>
+                      <p className="text-xs font-bold">গৃহীত</p>
+                    </div>
+                    <div className="relative z-10 text-center">
+                      <div className="w-10 h-10 bg-green-500 text-white rounded-full flex items-center justify-center mx-auto mb-2 pulse-ring"><i className="fas fa-utensils"></i></div>
+                      <p className="text-xs font-bold">তৈরি হচ্ছে</p>
+                    </div>
+                    <div className="relative z-10 text-center">
+                      <div className="w-10 h-10 bg-gray-200 text-gray-500 rounded-full flex items-center justify-center mx-auto mb-2"><i className="fas fa-motorcycle"></i></div>
+                      <p className="text-xs font-bold">পথে আছে</p>
+                    </div>
+                  </div>
+                  <p className="text-center mt-6 text-green-600 font-bold">আনুমানিক সময়: ৩০ মিনিট</p>
+                </div>
+              </div>
+            </section>
+          )}
 
           {/* Specials */}
           <section id="specials" className="py-16 bg-white">
@@ -224,8 +302,14 @@
               </div>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {specialOffers.map(offer => (
-                  <div key={offer.id} className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-100">
+                  <div key={offer.id} className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-100 relative group">
                     <img src={offer.image} alt={offer.name} className="w-full h-48 object-cover" />
+                    <button 
+                        onClick={() => toggleFavorite(offer.id)}
+                        className={`absolute top-3 right-3 p-2 rounded-full shadow-md ${favorites.includes(offer.id) ? 'bg-red-500 text-white' : 'bg-white text-gray-400'}`}
+                      >
+                        <i className={`${favorites.includes(offer.id) ? 'fas' : 'far'} fa-heart`}></i>
+                    </button>
                     <div className="p-6">
                       <h3 className="text-xl font-bold mb-2">{offer.name}</h3>
                       <p className="text-gray-600 mb-4">{offer.description}</p>
@@ -242,25 +326,27 @@
             </div>
           </section>
 
-          {/* Reviews (Empty State) */}
-          <section id="reviews" className="py-16 bg-gray-50">
-            <div className="max-w-7xl mx-auto px-4 text-center">
-              <h2 className="text-3xl font-bold mb-4">⭐ কাস্টমার রিভিউ ⭐</h2>
-              <div className="max-w-2xl mx-auto bg-white rounded-lg shadow p-12 mt-8 border-2 border-dashed border-gray-300">
-                <i className="fas fa-comments text-5xl text-gray-300 mb-4"></i>
-                <h3 className="text-xl font-bold mb-2">প্রথম রিভিউ দিন!</h3>
-                <p className="text-gray-600 mb-6">আমাদের সেবা কেমন লাগলো জানান</p>
-                <div className="flex justify-center gap-4 flex-wrap">
-                  <a href={facebookPageUrl} target="_blank" className="bg-blue-600 text-white px-6 py-3 rounded-lg flex items-center gap-2">
-                    <i className="fab fa-facebook"></i> ফেসবুকে রিভিউ
-                  </a>
-                  <a href={`https://wa.me/${phoneNumber}`} target="_blank" className="bg-green-500 text-white px-6 py-3 rounded-lg flex items-center gap-2">
-                    <i className="fab fa-whatsapp"></i> হোয়াটসঅ্যাপে মতামত
-                  </a>
+          {/* Favorites Section (Only shows if items saved) */}
+          {favorites.length > 0 && (
+            <section id="favorites" className="py-16 bg-red-50">
+              <div className="max-w-7xl mx-auto px-4">
+                <div className="text-center mb-8">
+                  <h2 className="text-3xl font-bold mb-2">❤️ আপনার প্রিয় খাবার</h2>
+                  <p>আপনার সেভ করা খাবারগুলো</p>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {savedItems.map(item => (
+                    <div key={item.id} className="bg-white rounded-lg shadow p-4 relative">
+                       <button onClick={() => toggleFavorite(item.id)} className="absolute top-2 right-2 text-red-500"><i className="fas fa-times-circle text-xl"></i></button>
+                       <h3 className="font-bold">{item.name}</h3>
+                       <p className="text-red-600 font-bold">৳{item.price}</p>
+                       <button onClick={() => handleOrder(item)} className="mt-3 w-full bg-green-500 text-white py-1 rounded text-sm">অর্ডার</button>
+                    </div>
+                  ))}
                 </div>
               </div>
-            </div>
-          </section>
+            </section>
+          )}
 
           {/* Menu */}
           <section id="menu" className="py-16 bg-white">
@@ -284,17 +370,28 @@
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {filteredItems.map(item => (
-                  <div key={item.id} className="bg-white rounded-lg shadow hover:shadow-lg transition-all overflow-hidden border border-gray-100">
+                  <div key={item.id} className="bg-white rounded-lg shadow hover:shadow-lg transition-all overflow-hidden border border-gray-100 relative">
                     <div className="relative">
                       <img src={item.image} alt={item.name} className="w-full h-48 object-cover" />
                       <span className="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 rounded text-sm font-bold">
                         {typeof item.price === "number" ? `৳${item.price}` : item.price}
                       </span>
+                      <button 
+                        onClick={() => toggleFavorite(item.id)}
+                        className={`absolute top-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md transition-colors ${favorites.includes(item.id) ? 'text-red-500' : 'text-gray-400 hover:text-red-500'}`}
+                      >
+                        <i className={`${favorites.includes(item.id) ? 'fas' : 'far'} fa-heart`}></i>
+                      </button>
                     </div>
                     <div className="p-4">
-                      <h3 className="font-bold text-lg mb-2">{item.name}</h3>
+                      <div className="flex justify-between items-start mb-2">
+                        <h3 className="font-bold text-lg">{item.name}</h3>
+                        <div className="flex items-center text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                          <i className="far fa-clock mr-1"></i> {item.time}
+                        </div>
+                      </div>
                       <p className="text-sm text-gray-500 mb-4 line-clamp-2">{item.description}</p>
-                      <button onClick={() => handleOrder(item)} className="w-full bg-red-600 text-white py-2 rounded flex justify-center items-center gap-2 hover:bg-red-700">
+                      <button onClick={() => handleOrder(item)} className="w-full bg-red-600 text-white py-2 rounded flex justify-center items-center gap-2 hover:bg-red-700 transition-colors">
                         <i className="fas fa-cart-plus"></i> অর্ডার করুন
                       </button>
                     </div>
@@ -304,17 +401,40 @@
             </div>
           </section>
 
-          {/* Features */}
-          <section className="py-16 bg-red-600 text-white">
-            <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
-              <div><i className="fas fa-carrot text-4xl mb-4"></i><h3 className="font-bold">ফ্রেশ উপকরণ</h3></div>
-              <div><i className="fas fa-heart text-4xl mb-4"></i><h3 className="font-bold">হাতে তৈরি</h3></div>
-              <div><i className="fas fa-truck text-4xl mb-4"></i><h3 className="font-bold">ফ্রি ডেলিভারি</h3></div>
-              <div><i className="fas fa-award text-4xl mb-4"></i><h3 className="font-bold">সেরা মান</h3></div>
+          {/* Payment Features */}
+          <section className="py-12 bg-gray-50">
+            <div className="max-w-7xl mx-auto px-4">
+               <div className="text-center mb-8">
+                 <h2 className="text-2xl font-bold">সহজ পেমেন্ট সুবিধা</h2>
+                 <p className="text-gray-600">আপনার পছন্দের মাধ্যমে পেমেন্ট করুন</p>
+               </div>
+               <div className="flex justify-center gap-8 items-center flex-wrap">
+                  <div className="bg-white p-4 rounded-lg shadow flex items-center gap-3">
+                    <img src="https://placehold.co/50x50/e2136e/ffffff?text=bKash" className="w-12 h-12 rounded" alt="bKash" />
+                    <div>
+                      <p className="font-bold">বিকাশ পেমেন্ট</p>
+                      <p className="text-xs text-gray-500">সেন্ড মানি / ক্যাশ আউট</p>
+                    </div>
+                  </div>
+                  <div className="bg-white p-4 rounded-lg shadow flex items-center gap-3">
+                    <img src="https://placehold.co/50x50/f7931e/ffffff?text=Nagad" className="w-12 h-12 rounded" alt="Nagad" />
+                    <div>
+                      <p className="font-bold">নগদ পেমেন্ট</p>
+                      <p className="text-xs text-gray-500">সেন্ড মানি / ক্যাশ আউট</p>
+                    </div>
+                  </div>
+                  <div className="bg-white p-4 rounded-lg shadow flex items-center gap-3">
+                    <i className="fas fa-money-bill-wave text-green-500 text-3xl"></i>
+                    <div>
+                      <p className="font-bold">ক্যাশ অন ডেলিভারি</p>
+                      <p className="text-xs text-gray-500">খাবার পেয়ে টাকা দিন</p>
+                    </div>
+                  </div>
+               </div>
             </div>
           </section>
 
-          {/* Contact */}
+          {/* Contact & Order Form */}
           <section id="contact" className="py-16 bg-white">
             <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-12">
               <div>
@@ -325,6 +445,13 @@
                     <div>
                       <p className="font-bold">ঠিকানা</p>
                       <p className="text-gray-600">এম রহমান প্লাজা, মেইন রোড, মাইজদী, নোয়াখালী</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <i className="fas fa-clock text-red-600 text-xl mt-1"></i>
+                    <div>
+                      <p className="font-bold">খোলার সময়</p>
+                      <p className="text-gray-600">সকাল ৭:০০ - রাত ১২:০০ (প্রতিদিন)</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
@@ -352,7 +479,28 @@
                   <input type="tel" placeholder="মোবাইল নম্বর *" required className="w-full p-3 border rounded focus:ring-2 focus:ring-red-500 outline-none" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
                   <textarea placeholder="ঠিকানা *" required className="w-full p-3 border rounded focus:ring-2 focus:ring-red-500 outline-none" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})}></textarea>
                   <textarea placeholder="অর্ডার ডিটেইলস *" required className="w-full p-3 border rounded focus:ring-2 focus:ring-red-500 outline-none" value={formData.details} onChange={e => setFormData({...formData, details: e.target.value})}></textarea>
-                  <button type="submit" className="w-full bg-green-500 text-white py-3 rounded font-bold hover:bg-green-600">অর্ডার কনফার্ম করুন</button>
+
+                  <div className="bg-white p-3 rounded border">
+                    <p className="font-semibold mb-2 text-sm">পেমেন্ট মেথড সিলেক্ট করুন:</p>
+                    <div className="flex gap-4">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input type="radio" name="payment" value="cod" checked={formData.payment === "cod"} onChange={e => setFormData({...formData, payment: e.target.value})} />
+                        <span className="text-sm">ক্যাশ অন ডেলিভারি</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input type="radio" name="payment" value="bkash" checked={formData.payment === "bkash"} onChange={e => setFormData({...formData, payment: e.target.value})} />
+                        <span className="text-sm text-pink-600 font-bold">বিকাশ</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input type="radio" name="payment" value="nagad" checked={formData.payment === "nagad"} onChange={e => setFormData({...formData, payment: e.target.value})} />
+                        <span className="text-sm text-orange-600 font-bold">নগদ</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <button type="submit" className="w-full bg-green-500 text-white py-3 rounded font-bold hover:bg-green-600 transition-colors flex justify-center items-center gap-2">
+                    <i className="fab fa-whatsapp"></i> অর্ডার কনফার্ম করুন
+                  </button>
                 </form>
               </div>
             </div>
