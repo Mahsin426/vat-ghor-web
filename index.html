@@ -4,48 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ভাত ঘর হোটেল রেস্টুরেন্ট এন্ড মিষ্টান্ন</title>
-    
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    
-    <!-- Babel for JSX -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; scroll-behavior: smooth; }
-    </style>
+    <style>body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; scroll-behavior: smooth; }</style>
 </head>
 <body class="bg-gray-50">
     <div id="root"></div>
 
     <script type="text/babel">
         const { useState, useEffect } = React;
-        
-        // ফিক্স: আইকনগুলোকে গ্লোবাল lucide অবজেক্ট থেকে নেওয়া হচ্ছে
-        const { 
-            Utensils, Star, Clock, MapPin, Phone, Mail, Instagram, Facebook, Twitter, 
-            Menu, X, Heart, ShoppingCart, Gift, Package, Fish, Meat, Salad, 
-            Cake, Drink, Wheat, ArrowRight, Truck 
-        } = lucide;
-
-        // ফিক্স: আইকন রেন্ডার করার জন্য একটি র‍্যাপার কম্পোনেন্ট (যদি সরাসরি কাজ না করে)
-        const Icon = ({ icon: IconName, ...props }) => {
-            if (!IconName) return null;
-            return <IconName {...props} />;
-        };
+        const { Utensils, Star, Clock, MapPin, Phone, Mail, Instagram, Facebook, Twitter, Menu, X, Heart, ShoppingCart, Gift, Package, Fish, Meat, Salad, Cake, Drink, Wheat, ArrowRight, Truck } = lucide;
 
         const App = () => {
             const [isMenuOpen, setIsMenuOpen] = useState(false);
             const [activeCategory, setActiveCategory] = useState('all');
             const [formData, setFormData] = useState({ name: '', phone: '', address: '', details: '' });
-
             const phoneNumber = "8801336613481";
 
             const handleOrder = (item) => {
@@ -55,615 +31,108 @@
 
             const handleCustomOrder = (e) => {
                 e.preventDefault();
-                const text = `*নতুন অর্ডার রিকোয়েস্ট*
-------------------
-নাম: ${formData.name}
-ফোন: ${formData.phone}
-ঠিকানা: ${formData.address}
-অর্ডার ডিটেইলস: ${formData.details}`;
+                const text = `*নতুন অর্ডার*\nনাম: ${formData.name}\nফোন: ${formData.phone}\nঠিকানা: ${formData.address}\nঅর্ডার: ${formData.details}`;
                 window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`, '_blank');
             };
 
-            const menuItems = [
-                {
-                    id: 1,
-                    name: 'শীতকালীন হাঁস স্পেশাল',
-                    price: 300,
-                    category: 'special',
-                    image: 'https://placehold.co/300x200/ff6b35/ffffff?text=হাঁস+ভুনা',
-                    description: 'হাঁস ভুনা + খিচুড়ি + সালাদ + ড্রিংকস + পানি'
-                },
-                {
-                    id: 2,
-                    name: 'শুক্রবার মেজবানি স্পেশাল',
-                    price: 350,
-                    category: 'special',
-                    image: 'https://placehold.co/300x200/f7931e/ffffff?text=মেজবানি',
-                    description: 'বিফ + রাইস + চনার ডাল + নেহারি + সালাদ + ড্রিংকস + পানি'
-                },
-                {
-                    id: 3,
-                    name: 'সাদা ভাত',
-                    price: 15,
-                    category: 'rice',
-                    image: 'https://placehold.co/300x200/4ade80/ffffff?text=সাদা+ভাত',
-                    description: 'ফ্রেশ ও সুগন্ধি সাদা ভাত'
-                },
-                {
-                    id: 4,
-                    name: 'মোরগ পোলাউ',
-                    price: 160,
-                    category: 'rice',
-                    image: 'https://placehold.co/300x200/fbbf24/ffffff?text=পোলাউ',
-                    description: 'মসলাদার মোরগ পোলাউ'
-                },
-                {
-                    id: 5,
-                    name: 'স্পেশাল কাচ্চি',
-                    price: 300,
-                    category: 'rice',
-                    image: 'https://placehold.co/300x200/a855f7/ffffff?text=কাচ্চি',
-                    description: 'স্পেশাল কাচ্চি বিরিয়ানি'
-                },
-                {
-                    id: 6,
-                    name: 'বিফ খিচুড়ি',
-                    price: 280,
-                    category: 'rice',
-                    image: 'https://placehold.co/300x200/ef4444/ffffff?text=বিফ+খিচুড়ি',
-                    description: 'বিফ খিচুড়ি'
-                },
-                {
-                    id: 7,
-                    name: 'চিকেন খিচুড়ি',
-                    price: 180,
-                    category: 'rice',
-                    image: 'https://placehold.co/300x200/10b981/ffffff?text=চিকেন+খিচুড়ি',
-                    description: 'চিকেন খিচুড়ি'
-                },
-                {
-                    id: 8,
-                    name: 'মাটন খিচুড়ি',
-                    price: 300,
-                    category: 'rice',
-                    image: 'https://placehold.co/300x200/6366f1/ffffff?text=মাটন+খিচুড়ি',
-                    description: 'মাটন খিচুড়ি'
-                },
-                {
-                    id: 9,
-                    name: 'বিফ ভুনা',
-                    price: 200,
-                    category: 'meat',
-                    image: 'https://placehold.co/300x200/ff6b35/ffffff?text=বিফ+ভুনা',
-                    description: 'মসলাদার বিফ ভুনা'
-                },
-                {
-                    id: 10,
-                    name: 'বিফ কালা ভুনা',
-                    price: 220,
-                    category: 'meat',
-                    image: 'https://placehold.co/300x200/f7931e/ffffff?text=কালা+ভুনা',
-                    description: 'কালা ভুনা'
-                },
-                {
-                    id: 11,
-                    name: 'চিকেন রোস্ট',
-                    price: 120,
-                    category: 'meat',
-                    image: 'https://placehold.co/300x200/4ade80/ffffff?text=রোস্ট',
-                    description: 'চিকেন রোস্ট'
-                },
-                {
-                    id: 12,
-                    name: 'চিকেন চাপ',
-                    price: 150,
-                    category: 'meat',
-                    image: 'https://placehold.co/300x200/fbbf24/ffffff?text=চাপ',
-                    description: 'চিকেন চাপ'
-                },
-                {
-                    id: 13,
-                    name: 'ইলিশ',
-                    price: 'বাজার দর',
-                    category: 'fish',
-                    image: 'https://placehold.co/300x200/3b82f6/ffffff?text=ইলিশ',
-                    description: 'তাজা ইলিশ মাছ'
-                },
-                {
-                    id: 14,
-                    name: 'ভর্তা',
-                    price: 20,
-                    category: 'side',
-                    image: 'https://placehold.co/300x200/a855f7/ffffff?text=ভর্তা',
-                    description: 'মাছ/শুটকি/শিম ভর্তা'
-                },
-                {
-                    id: 15,
-                    name: 'আলু ভর্তা',
-                    price: 10,
-                    category: 'side',
-                    image: 'https://placehold.co/300x200/ef4444/ffffff?text=আলু+ভর্তা',
-                    description: 'আলু ভর্তা'
-                },
-                {
-                    id: 16,
-                    name: 'পরটা',
-                    price: 15,
-                    category: 'bread',
-                    image: 'https://placehold.co/300x200/10b981/ffffff?text=পরটা',
-                    description: 'পরটা'
-                },
-                {
-                    id: 17,
-                    name: 'রসমালাই',
-                    price: 450,
-                    category: 'dessert',
-                    image: 'https://placehold.co/300x200/fbbf24/ffffff?text=রসমালাই',
-                    description: 'রসমালাই (কেজি)'
-                },
-                {
-                    id: 18,
-                    name: 'রসগোল্লা',
-                    price: 380,
-                    category: 'dessert',
-                    image: 'https://placehold.co/300x200/6366f1/ffffff?text=রসগোল্লা',
-                    description: 'রসগোল্লা'
-                },
-                {
-                    id: 19,
-                    name: 'কালোজাম',
-                    price: 350,
-                    category: 'dessert',
-                    image: 'https://placehold.co/300x200/ff6b35/ffffff?text=কালোজাম',
-                    description: 'কালোজাম'
-                },
-                {
-                    id: 20,
-                    name: 'দধি',
-                    price: 300,
-                    category: 'dessert',
-                    image: 'https://placehold.co/300x200/f7931e/ffffff?text=দধি',
-                    description: 'দধি'
-                }
-            ];
-
             const categories = [
                 { id: 'all', name: 'সব খাবার', icon: Utensils },
-                { id: 'special', name: 'স্পেশাল অফার', icon: Gift },
-                { id: 'rice', name: 'ভাত ও বিরিয়ানি', icon: Wheat },
-                { id: 'meat', name: 'মাংস ও গ্রিল', icon: Meat },
-                { id: 'fish', name: 'তাজা মাছ', icon: Fish },
-                { id: 'side', name: 'ভর্তা ও ভাজি', icon: Salad },
-                { id: 'bread', name: 'রুটি ও নাস্তা', icon: Package },
+                { id: 'special', name: 'স্পেশাল', icon: Gift },
+                { id: 'rice', name: 'ভাত-বিরিয়ানি', icon: Wheat },
+                { id: 'meat', name: 'মাংস', icon: Meat },
+                { id: 'fish', name: 'মাছ', icon: Fish },
                 { id: 'dessert', name: 'মিষ্টান্ন', icon: Cake }
             ];
 
-            const filteredItems = activeCategory === 'all' 
-                ? menuItems 
-                : menuItems.filter(item => item.category === activeCategory);
-
-            const specialOffers = [
-                {
-                    id: 1,
-                    name: 'শীতকালীন হাঁস স্পেশাল',
-                    price: 300,
-                    description: 'হাঁস ভুনা + খিচুড়ি + সালাদ + ড্রিংকস + পানি',
-                    image: 'https://placehold.co/400x250/ff6b35/ffffff?text=হাঁস+স্পেশাল'
-                },
-                {
-                    id: 2,
-                    name: 'শুক্রবার মেজবানি স্পেশাল',
-                    price: 350,
-                    description: 'বিফ + রাইস + চনার ডাল + নেহারি + সালাদ + ড্রিংকস + পানি',
-                    image: 'https://placehold.co/400x250/f7931e/ffffff?text=মেজবানি+স্পেশাল'
-                }
+            const menuItems = [
+                { id: 1, name: 'হাঁস স্পেশাল', price: 300, category: 'special', image: 'https://i.ibb.co/w5CfRSd/IMG-1954.jpg', desc: 'হাঁস ভুনা + খিচুড়ি + সালাদ' },
+                { id: 2, name: 'মেজবানি মাংস', price: 350, category: 'special', image: 'https://i.ibb.co/sJgTX2WR/IMG-1995.jpg', desc: 'বিফ + ডাল + নেহারি' },
+                { id: 3, name: 'কাচ্চি বিরিয়ানি', price: 300, category: 'rice', image: 'https://i.ibb.co/zW8kHGVK/IMG-2234.jpg', desc: 'স্পেশাল কাচ্চি' },
+                { id: 4, name: 'সাদা ভাত', price: 15, category: 'rice', image: 'https://i.ibb.co/d0DTKGDn/IMG-2205.jpg', desc: 'মিনিকেট চালের ভাত' },
+                { id: 17, name: 'রসমালাই', price: 450, category: 'dessert', image: 'https://i.ibb.co/hRCdP3Hy/IMG-2236.jpg', desc: 'খাঁটি রসমালাই (১ কেজি)' }
             ];
-            
-            // লোগো কম্পোনেন্ট
-            const Logo = () => (
-                <div className="flex items-center cursor-pointer" onClick={() => window.scrollTo(0,0)}>
-                   <img 
-                      src="https://i.ibb.co/vCm5Mz6Q/IMG-1612.jpg" 
-                      alt="Vhat Ghor Logo" 
-                      className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm mr-2" 
-                    />
-                    <span className="text-xl font-bold text-gray-900">ভাত ঘর</span>
-                </div>
-            );
+
+            const filteredItems = activeCategory === 'all' ? menuItems : menuItems.filter(i => i.category === activeCategory);
+            const handleImageError = (e) => { e.target.src = 'https://placehold.co/300x200/ff0000/ffffff?text=Image+Not+Found'; };
 
             return (
-                <div className="min-h-screen bg-gray-50 font-sans">
-                    {/* Header */}
-                    <header className="bg-white shadow-sm sticky top-0 z-50">
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                            <div className="flex justify-between items-center h-16">
-                                {/* Logo */}
-                                <Logo />
-
-                                {/* Desktop Navigation */}
-                                <nav className="hidden md:flex space-x-6">
-                                    <a href="#home" className="text-gray-900 hover:text-red-600 font-medium">হোম</a>
-                                    <a href="#menu" className="text-gray-700 hover:text-red-600">মেনু</a>
-                                    <a href="#specials" className="text-gray-700 hover:text-red-600">স্পেশাল অফার</a>
-                                    <a href="#about" className="text-gray-700 hover:text-red-600">আমাদের সম্পর্কে</a>
-                                    <a href="#contact" className="text-gray-700 hover:text-red-600">যোগাযোগ</a>
-                                </nav>
-
-                                {/* Contact Info */}
-                                <div className="flex items-center space-x-4">
-                                    <a href={`tel:${phoneNumber}`} className="p-2 text-gray-700 hover:text-red-600">
-                                        <Icon icon={Phone} className="h-5 w-5" />
-                                    </a>
-                                    <button 
-                                        onClick={() => window.open(`https://wa.me/${phoneNumber}`, '_blank')}
-                                        className="relative p-2 text-gray-700 hover:text-red-600"
-                                    >
-                                        <Icon icon={ShoppingCart} className="h-5 w-5" />
-                                    </button>
-
-                                    {/* Mobile menu button */}
-                                    <button 
-                                        className="md:hidden p-2 text-gray-700"
-                                        onClick={() => setIsMenuOpen(!isMenuOpen)}
-                                    >
-                                        <Icon icon={isMenuOpen ? X : Menu} className="h-6 w-6" />
-                                    </button>
-                                </div>
+                <div className="min-h-screen">
+                    <nav className="bg-white shadow sticky top-0 z-50 px-4 py-3">
+                        <div className="flex justify-between items-center max-w-6xl mx-auto">
+                            <div className="flex items-center gap-3 font-bold text-lg md:text-xl text-red-600">
+                                <img src="https://i.ibb.co/vCm5Mz6Q/IMG-1612.jpg" alt="Logo" className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover border-2 border-red-100 shadow-sm" />
+                                <span className="hidden sm:inline">ভাত ঘর হোটেল রেস্টুরেন্ট</span>
+                                <span className="sm:hidden">ভাত ঘর</span>
                             </div>
-
-                            {/* Mobile Navigation */}
-                            {isMenuOpen && (
-                                <div className="md:hidden py-4 border-t">
-                                    <nav className="flex flex-col space-y-4">
-                                        <a href="#home" className="text-gray-900 hover:text-red-600 font-medium" onClick={() => setIsMenuOpen(false)}>হোম</a>
-                                        <a href="#menu" className="text-gray-700 hover:text-red-600" onClick={() => setIsMenuOpen(false)}>মেনু</a>
-                                        <a href="#specials" className="text-gray-700 hover:text-red-600" onClick={() => setIsMenuOpen(false)}>স্পেশাল অফার</a>
-                                        <a href="#about" className="text-gray-700 hover:text-red-600" onClick={() => setIsMenuOpen(false)}>আমাদের সম্পর্কে</a>
-                                        <a href="#contact" className="text-gray-700 hover:text-red-600" onClick={() => setIsMenuOpen(false)}>যোগাযোগ</a>
-                                    </nav>
-                                </div>
-                            )}
+                            <div className="flex gap-4 items-center">
+                                <a href="tel:+8801336613481" className="bg-green-100 p-2 rounded-full text-green-600">📞</a>
+                                <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden p-2 text-gray-600">☰</button>
+                            </div>
                         </div>
+                    </nav>
+                    
+                    {isMenuOpen && (
+                        <div className="bg-white border-b p-4 flex flex-col gap-3 md:hidden shadow-lg">
+                            <a href="#home" onClick={() => setIsMenuOpen(false)}>হোম</a>
+                            <a href="#menu" onClick={() => setIsMenuOpen(false)}>মেনু</a>
+                            <a href="#contact" onClick={() => setIsMenuOpen(false)}>যোগাযোগ</a>
+                        </div>
+                    )}
+
+                    <header id="home" className="bg-gradient-to-r from-red-600 to-red-800 text-white py-20 text-center px-4">
+                        <h1 className="text-3xl md:text-5xl font-bold mb-4">ভাত ঘর হোটেল রেস্টুরেন্ট</h1>
+                        <p className="mb-8 text-lg md:text-xl text-red-100">নোয়াখালীর ঐতিহ্যবাহী স্বাদের সমাহার</p>
+                        <a href="#menu" className="bg-white text-red-600 px-8 py-3 rounded-full font-bold shadow-lg hover:bg-gray-100 inline-block">মেনু দেখুন</a>
                     </header>
 
-                    {/* Hero Section */}
-                    <section id="home" className="bg-gradient-to-r from-red-600 to-red-700 text-white py-20">
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                            <h1 className="text-4xl md:text-5xl font-bold mb-6">ভাত ঘর হোটেল রেস্টুরেন্ট এন্ড মিষ্টান্ন</h1>
-                            <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
-                                নোয়াখালীর স্বাদে স্বাদিষ্ট খাবার এবং ঐতিহ্যবাহী মিষ্টান্ন
-                            </p>
-                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                                <a href="#contact" className="bg-white text-red-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors inline-block">
-                                    অর্ডার করুন
-                                </a>
-                                <a href="#menu" className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-red-600 transition-colors inline-block">
-                                    মেনু দেখুন
-                                </a>
-                            </div>
-                            <p className="mt-4 text-yellow-300 font-semibold">www.vatghorhotelonline.com</p>
+                    <section id="menu" className="py-16 px-4 max-w-6xl mx-auto">
+                        <h2 className="text-3xl font-bold text-center mb-8 text-gray-800">আমাদের মেনু</h2>
+                        <div className="flex flex-wrap justify-center gap-3 mb-10">
+                            {categories.map(cat => (
+                                <button key={cat.id} onClick={() => setActiveCategory(cat.id)} className={`px-5 py-2 rounded-full border ${activeCategory === cat.id ? 'bg-red-600 text-white' : 'bg-white text-gray-700'}`}>
+                                    {cat.icon} {cat.name}
+                                </button>
+                            ))}
                         </div>
-                    </section>
-
-                    {/* Special Offers Section */}
-                    <section id="specials" className="py-16 bg-white">
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                            <div className="text-center mb-12">
-                                <h2 className="text-3xl font-bold text-gray-900 mb-4">🔥 স্পেশাল অফার 🔥</h2>
-                                <div className="w-20 h-1 bg-red-600 mx-auto mb-6"></div>
-                                <p className="text-gray-600 max-w-2xl mx-auto">
-                                    আমাদের স্পেশাল অফারগুলো একবার চেষ্টা করে দেখুন, আপনি আবার আসবেন!
-                                </p>
-                            </div>
-                            
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                {specialOffers.map((offer) => (
-                                    <div key={offer.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow border border-gray-100">
-                                        <img 
-                                            src={offer.image} 
-                                            alt={offer.name}
-                                            className="w-full h-48 object-cover"
-                                        />
-                                        <div className="p-6">
-                                            <h3 className="text-xl font-semibold text-gray-900 mb-2">{offer.name}</h3>
-                                            <p className="text-gray-600 mb-4">{offer.description}</p>
-                                            <div className="flex items-center justify-between">
-                                                <span className="text-2xl font-bold text-red-600">৳{offer.price}</span>
-                                                <button 
-                                                    onClick={() => handleOrder(offer)}
-                                                    className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
-                                                >
-                                                    <Icon icon={ShoppingCart} className="w-4 h-4" />
-                                                    অর্ডার করুন
-                                                </button>
-                                            </div>
-                                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {filteredItems.map(item => (
+                                <div key={item.id} className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+                                    <div className="relative h-48 overflow-hidden">
+                                        <img src={item.image} alt={item.name} className="w-full h-full object-cover" onError={handleImageError} />
+                                        <div className="absolute top-3 right-3 bg-white/90 px-3 py-1 rounded-full text-red-600 font-bold text-sm">৳{item.price}</div>
                                     </div>
-                                ))}
-                            </div>
-                        </div>
-                    </section>
-
-                    {/* About Section */}
-                    <section id="about" className="py-16 bg-gray-50">
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                            <div className="text-center mb-12">
-                                <h2 className="text-3xl font-bold text-gray-900 mb-4">আমাদের সম্পর্কে</h2>
-                                <div className="w-20 h-1 bg-red-600 mx-auto mb-6"></div>
-                            </div>
-                            
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                                <div>
-                                    <h3 className="text-2xl font-semibold text-gray-900 mb-4">নোয়াখালীর গর্ব - ভাত ঘর</h3>
-                                    <p className="text-gray-600 mb-4 leading-relaxed">
-                                        ভাত ঘর হোটেল রেস্টুরেন্ট এন্ড মিষ্টান্ন নোয়াখালী জেলার একটি প্রতিষ্ঠিত খাবারের প্রতিষ্ঠান। 
-                                        আমরা ২০১০ সাল থেকে নোয়াখালীবাসীকে স্বাদিষ্ট ও স্বাস্থ্যকর খাবার সরবরাহ করে আসছি।
-                                    </p>
-                                    <p className="text-gray-600 mb-6 leading-relaxed">
-                                        আমাদের বিশেষত্ব হলো নোয়াখালীর ঐতিহ্যবাহী রেসিপি এবং ফ্রেশ উপকরণ ব্যবহার করে খাবার তৈরি করা। 
-                                        আমাদের মিষ্টান্নগুলো হাতে তৈরি এবং সম্পূর্ণ প্রাকৃতিক উপাদান দিয়ে তৈরি।
-                                    </p>
-                                    
-                                    <div className="grid grid-cols-2 gap-6">
-                                        <div className="flex items-center">
-                                            <Icon icon={Clock} className="h-6 w-6 text-red-600 mr-3" />
-                                            <div>
-                                                <p className="font-semibold">খোলা সময়</p>
-                                                <p className="text-gray-600">সকাল ৮:০০ - রাত ১০:০০</p>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center">
-                                            <Icon icon={MapPin} className="h-6 w-6 text-red-600 mr-3" />
-                                            <div>
-                                                <p className="font-semibold">অবস্থান</p>
-                                                <p className="text-gray-600">এম রহমান প্লাজা, মেইন রোড, মাইজদী, নোয়াখালী</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div className="bg-gray-100 rounded-lg h-96 flex items-center justify-center overflow-hidden">
-                                    <img 
-                                        src="https://placehold.co/500x400/e5e7eb/374151?text=ভাত+ঘর+রেস্টুরেন্ট" 
-                                        alt="ভাত ঘর রেস্টুরেন্ট"
-                                        className="w-full h-full object-cover rounded-lg hover:scale-105 transition-transform duration-500"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    {/* Menu Section */}
-                    <section id="menu" className="py-16 bg-white">
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                            <div className="text-center mb-12">
-                                <h2 className="text-3xl font-bold text-gray-900 mb-4">আমাদের মেনু</h2>
-                                <div className="w-20 h-1 bg-red-600 mx-auto mb-6"></div>
-                                <p className="text-gray-600 max-w-2xl mx-auto">
-                                    নোয়াখালীর স্বাদে তৈরি আমাদের বিশেষ খাবার এবং মিষ্টান্ন
-                                </p>
-                            </div>
-
-                            {/* Category Tabs */}
-                            <div className="flex flex-wrap justify-center gap-4 mb-12">
-                                {categories.map((category) => {
-                                    return (
-                                        <button
-                                            key={category.id}
-                                            onClick={() => setActiveCategory(category.id)}
-                                            className={`flex items-center px-6 py-3 rounded-full font-medium transition-all ${
-                                                activeCategory === category.id
-                                                    ? 'bg-red-600 text-white shadow-lg scale-105'
-                                                    : 'bg-white text-gray-700 hover:bg-red-50 border border-gray-200'
-                                            }`}
-                                        >
-                                            <Icon icon={category.icon} className="h-4 w-4 mr-2" />
-                                            {category.name}
+                                    <div className="p-5">
+                                        <h3 className="font-bold text-xl mb-2 text-gray-800">{item.name}</h3>
+                                        <p className="text-gray-500 text-sm mb-4 min-h-[40px]">{item.desc}</p>
+                                        <button onClick={() => handleOrder(item)} className="w-full bg-red-600 text-white py-2.5 rounded-lg font-medium hover:bg-red-700 flex items-center justify-center gap-2">
+                                            অর্ডার করুন (WhatsApp)
                                         </button>
-                                    );
-                                })}
-                            </div>
-
-                            {/* Menu Items */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                                {filteredItems.map((item) => (
-                                    <div key={item.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow group">
-                                        <div className="relative overflow-hidden">
-                                            <img 
-                                                src={item.image} 
-                                                alt={item.name}
-                                                className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
-                                            />
-                                            <div className="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 rounded text-xs font-semibold">
-                                                {typeof item.price === 'number' ? `৳${item.price}` : item.price}
-                                            </div>
-                                        </div>
-                                        
-                                        <div className="p-6">
-                                            <h3 className="text-lg font-semibold text-gray-900 mb-2">{item.name}</h3>
-                                            <p className="text-gray-600 text-sm mb-4 line-clamp-2">{item.description}</p>
-                                            
-                                            <div className="flex items-center justify-between">
-                                                <button 
-                                                    onClick={() => handleOrder(item)}
-                                                    className="w-full bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm flex items-center justify-center gap-2"
-                                                >
-                                                    <Icon icon={ShoppingCart} className="w-4 h-4" />
-                                                    অর্ডার করুন
-                                                </button>
-                                            </div>
-                                        </div>
                                     </div>
-                                ))}
-                            </div>
+                                </div>
+                            ))}
                         </div>
                     </section>
 
-                    {/* Features Section */}
-                    <section className="py-16 bg-red-600 text-white">
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-                                <div>
-                                    <Icon icon={Utensils} className="h-12 w-12 mx-auto mb-4" />
-                                    <h3 className="text-xl font-semibold mb-2">ফ্রেশ উপকরণ</h3>
-                                    <p className="text-red-100">প্রতিদিন সকালে ফ্রেশ উপকরণ দিয়ে খাবার তৈরি</p>
-                                </div>
-                                <div>
-                                    <Icon icon={Heart} className="h-12 w-12 mx-auto mb-4" />
-                                    <h3 className="text-xl font-semibold mb-2">হাতে তৈরি মিষ্টান্ন</h3>
-                                    <p className="text-red-100">ঐতিহ্যবাহী পদ্ধতিতে তৈরি মিষ্টান্ন</p>
-                                </div>
-                                <div>
-                                    <Icon icon={Truck} className="h-12 w-12 mx-auto mb-4" />
-                                    <h3 className="text-xl font-semibold mb-2">ফ্রি ডেলিভারি</h3>
-                                    <p className="text-red-100">নোয়াখালী সদরে ফ্রি হোম ডেলিভারি</p>
-                                </div>
-                            </div>
+                    <section id="contact" className="py-16 bg-gray-50 px-4">
+                        <div className="max-w-lg mx-auto bg-white p-8 rounded-xl shadow-lg border border-gray-100">
+                            <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">সরাসরি অর্ডার পাঠান</h2>
+                            <form onSubmit={handleCustomOrder} className="space-y-4">
+                                <input className="w-full border p-3 rounded-lg" placeholder="নাম লিখুন" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required />
+                                <input className="w-full border p-3 rounded-lg" placeholder="017..." type="tel" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} required />
+                                <textarea className="w-full border p-3 rounded-lg" rows="2" placeholder="পূর্ণ ঠিকানা লিখুন" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} required></textarea>
+                                <textarea className="w-full border p-3 rounded-lg" rows="3" placeholder="কি কি লাগবে লিখুন..." value={formData.details} onChange={e => setFormData({...formData, details: e.target.value})} required></textarea>
+                                <button className="w-full bg-green-600 text-white py-3 rounded-lg font-bold">অর্ডার কনফার্ম করুন</button>
+                            </form>
                         </div>
                     </section>
 
-                    {/* Contact Section */}
-                    <section id="contact" className="py-16 bg-white">
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                            <div className="text-center mb-12">
-                                <h2 className="text-3xl font-bold text-gray-900 mb-4">যোগাযোগ ও অর্ডার</h2>
-                                <div className="w-20 h-1 bg-red-600 mx-auto mb-6"></div>
-                            </div>
-                            
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                                <div>
-                                    <h3 className="text-2xl font-semibold text-gray-900 mb-6">আমাদের ঠিকানা</h3>
-                                    <div className="space-y-4">
-                                        <div className="flex items-start">
-                                            <Icon icon={MapPin} className="h-6 w-6 text-red-600 mt-1 mr-4" />
-                                            <div>
-                                                <p className="font-semibold">ঠিকানা</p>
-                                                <p className="text-gray-600">এম রহমান প্লাজা, মেইন রোড, মাইজদী, নোয়াখালী</p>
-                                                <p className="text-gray-600 mt-1">নোয়াখালী সুপার মার্কেটের পশ্চিমে মেইন রোডের পশ্চিম পাশে</p>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-start">
-                                            <Icon icon={Phone} className="h-6 w-6 text-red-600 mt-1 mr-4" />
-                                            <div>
-                                                <p className="font-semibold">ফোন (অর্ডার ও বুকিং)</p>
-                                                <p className="text-gray-600 font-mono text-lg">০১৩৩৬-৬১৩৪৮১</p>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-start">
-                                            <Icon icon={Facebook} className="h-6 w-6 text-red-600 mt-1 mr-4" />
-                                            <div>
-                                                <p className="font-semibold">ফেসবুক</p>
-                                                <a href="https://www.facebook.com/share/1BFJVsuQf9/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-                                                    আমাদের ফেসবুক পেজ ভিজিট করুন
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="mt-8">
-                                        <h4 className="font-semibold text-lg mb-4">সোশ্যাল মিডিয়া</h4>
-                                        <div className="flex space-x-4">
-                                            <a href="https://www.facebook.com/share/1BFJVsuQf9/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" className="bg-blue-600 text-white p-3 rounded-full hover:bg-blue-700 transition-colors">
-                                                <Icon icon={Facebook} className="h-5 w-5" />
-                                            </a>
-                                            <a href="#" className="bg-pink-600 text-white p-3 rounded-full hover:bg-pink-700 transition-colors">
-                                                <Icon icon={Instagram} className="h-5 w-5" />
-                                            </a>
-                                            <a href="#" className="bg-blue-400 text-white p-3 rounded-full hover:bg-blue-500 transition-colors">
-                                                <Icon icon={Twitter} className="h-5 w-5" />
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div className="bg-red-50 p-8 rounded-lg border border-red-100">
-                                    <h3 className="text-2xl font-semibold text-gray-900 mb-6">অর্ডার পাঠান (হোয়াটসঅ্যাপ)</h3>
-                                    <form onSubmit={handleCustomOrder} className="space-y-4">
-                                        <div>
-                                            <label className="block text-gray-700 mb-2 font-medium">নাম</label>
-                                            <input 
-                                                type="text" 
-                                                required
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                                                placeholder="আপনার নাম লিখুন"
-                                                value={formData.name}
-                                                onChange={(e) => setFormData({...formData, name: e.target.value})}
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-gray-700 mb-2 font-medium">ফোন নম্বর</label>
-                                            <input 
-                                                type="tel" 
-                                                required
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                                                placeholder="আপনার মোবাইল নম্বর"
-                                                value={formData.phone}
-                                                onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-gray-700 mb-2 font-medium">ঠিকানা</label>
-                                            <textarea 
-                                                rows="2"
-                                                required
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                                                placeholder="আপনার সম্পূর্ণ ঠিকানা"
-                                                value={formData.address}
-                                                onChange={(e) => setFormData({...formData, address: e.target.value})}
-                                            ></textarea>
-                                        </div>
-                                        <div>
-                                            <label className="block text-gray-700 mb-2 font-medium">অর্ডার ডিটেইলস</label>
-                                            <textarea 
-                                                rows="3"
-                                                required
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                                                placeholder="কি কি খাবার অর্ডার করতে চান বিস্তারিত লিখুন..."
-                                                value={formData.details}
-                                                onChange={(e) => setFormData({...formData, details: e.target.value})}
-                                            ></textarea>
-                                        </div>
-                                        <button 
-                                            type="submit"
-                                            className="w-full bg-green-500 text-white py-3 rounded-lg font-semibold hover:bg-green-600 transition-colors flex items-center justify-center gap-2"
-                                        >
-                                            <Icon icon={Phone} className="h-5 w-5" />
-                                            অর্ডার কনফার্ম করুন (WhatsApp)
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    {/* Footer */}
-                    <footer className="bg-gray-900 text-white py-12">
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                            <div className="text-center">
-                                <div className="flex items-center justify-center mb-4">
-                                    <div className="w-10 h-10 bg-red-400 rounded-full flex items-center justify-center text-white font-bold text-xl">
-                                        ভ
-                                    </div>
-                                    <span className="ml-2 text-2xl font-bold">ভাত ঘর</span>
-                                </div>
-                                <p className="text-gray-400 mb-4">
-                                    নোয়াখালীর স্বাদে স্বাদিষ্ট খাবার এবং ঐতিহ্যবাহী মিষ্টান্ন
-                                </p>
-                                <p className="text-gray-400 mb-4 font-mono">
-                                    www.vatghorhotelonline.com
-                                </p>
-                                <div className="border-t border-gray-800 pt-8">
-                                    <p className="text-gray-500">
-                                        &copy; {new Date().getFullYear()} ভাত ঘর হোটেল রেস্টুরেন্ট এন্ড মিষ্টান্ন। সর্বস্বত্ব সংরক্ষিত।
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+                    <footer className="bg-gray-900 text-white text-center py-8 mt-10">
+                        <p>© ২০২৬ ভাত ঘর হোটেল রেস্টুরেন্ট</p>
+                        <p className="text-gray-500 text-sm">মাইজদী, নোয়াখালী | ০১৩৩৬-৬১৩৪৮১</p>
                     </footer>
                 </div>
             );
         };
-
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
     </script>
