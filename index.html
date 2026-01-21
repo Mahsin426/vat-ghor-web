@@ -3,23 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ভাত ঘর হোটেল রেস্টুরেন্ট এন্ড মিষ্টান্ন</title>
-    
+    <title>ভাত ঘর হোটেল রেস্টুরেন্ট এন্ড মিষ্টান্ন - নোয়াখালীর সেরা রেস্টুরেন্ট</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="ভাত ঘর - নোয়াখালীর সেরা রেস্টুরেন্ট। স্পেশাল বিরিয়ানি, খিচুড়ি, হাঁসের মাংস এবং ঐতিহ্যবাহী মিষ্টান্ন। হোম ডেলিভারি সেবা উপলব্ধ।">
+    <meta name="keywords" content="নোয়াখালী রেস্টুরেন্ট, বিরিয়ানি, খিচুড়ি, মিষ্টান্ন, হোম ডেলিভারি, ভাত ঘর">
+    <meta name="author" content="ভাত ঘর হোটেল রেস্টুরেন্ট">
+
+    <!-- Open Graph Meta Tags for Social Media -->
+    <meta property="og:title" content="ভাত ঘর হোটেল রেস্টুরেন্ট এন্ড মিষ্টান্ন">
+    <meta property="og:description" content="নোয়াখালীর স্বাদে স্বাদিষ্ট খাবার এবং ঐতিহ্যবাহী মিষ্টান্ন। হোম ডেলিভারি সেবা।">
+    <meta property="og:image" content="https://i.ibb.co/vCm5Mz6Q/IMG-1612.jpg">
+    <meta property="og:url" content="https://www.vatghorhotelonline.com">
+    <meta property="og:type" content="restaurant">
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    
+
     <!-- Babel for JSX -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
+
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    
+
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; scroll-behavior: smooth; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            scroll-behavior: smooth; 
+        }
+
+        /* Smooth animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        /* Floating button animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* Image lazy loading effect */
+        img {
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        img[loading="lazy"] {
+            opacity: 0;
+        }
+
+        img[loading="lazy"].loaded {
+            opacity: 1;
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -27,162 +75,764 @@
 
     <script type="text/babel">
         const { useState, useEffect } = React;
-        
+        const { Utensils, Star, Clock, MapPin, Phone, Mail, Instagram, Facebook, Twitter, Menu, X, Heart, ShoppingCart, Gift, Package, Fish, MessageCircle, Wheat, ArrowRight, Truck, Award, Users, ThumbsUp } = lucide;
+
         const App = () => {
             const [isMenuOpen, setIsMenuOpen] = useState(false);
             const [activeCategory, setActiveCategory] = useState('all');
             const [formData, setFormData] = useState({ name: '', phone: '', address: '', details: '' });
+            const [showFloatingButton, setShowFloatingButton] = useState(false);
 
             const phoneNumber = "8801336613481";
 
+            // Show floating button on scroll
+            useEffect(() => {
+                const handleScroll = () => {
+                    setShowFloatingButton(window.scrollY > 300);
+                };
+                window.addEventListener('scroll', handleScroll);
+                return () => window.removeEventListener('scroll', handleScroll);
+            }, []);
+
             const handleOrder = (item) => {
-                const text = `আসসালামু আলাইকুম, আমি "${item.name}" (দাম: ৳${item.price}) অর্ডার করতে চাই।`;
-                window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`, '_blank');
+                const text = \`আসসালামু আলাইকুম, আমি "\${item.name}" (দাম: ৳\${item.price}) অর্ডার করতে চাই।\`;
+                window.open(\`https://wa.me/\${phoneNumber}?text=\${encodeURIComponent(text)}\`, '_blank');
             };
 
             const handleCustomOrder = (e) => {
                 e.preventDefault();
-                const text = `*নতুন অর্ডার*\nনাম: ${formData.name}\nফোন: ${formData.phone}\nঠিকানা: ${formData.address}\nঅর্ডার: ${formData.details}`;
-                window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`, '_blank');
+                const text = \`*নতুন অর্ডার রিকোয়েস্ট*
+------------------
+নাম: \${formData.name}
+ফোন: \${formData.phone}
+ঠিকানা: \${formData.address}
+অর্ডার ডিটেইলস: \${formData.details}\`;
+                window.open(\`https://wa.me/\${phoneNumber}?text=\${encodeURIComponent(text)}\`, '_blank');
+                setFormData({ name: '', phone: '', address: '', details: '' });
             };
 
-            const categories = [
-                { id: 'all', name: 'সব খাবার', icon: '🍽️' },
-                { id: 'special', name: 'স্পেশাল', icon: '🔥' },
-                { id: 'rice', name: 'ভাত-বিরিয়ানি', icon: '🍚' },
-                { id: 'meat', name: 'মাংস', icon: '🍗' },
-                { id: 'fish', name: 'মাছ', icon: '🐟' },
-                { id: 'dessert', name: 'মিষ্টান্ন', icon: '🧁' }
-            ];
+            const handleQuickOrder = () => {
+                window.open(\`https://wa.me/\${phoneNumber}?text=\${encodeURIComponent('আসসালামু আলাইকুম, আমি অর্ডার দিতে চাই।')}\`, '_blank');
+            };
 
             const menuItems = [
-                { id: 1, name: 'হাঁস স্পেশাল', price: 300, category: 'special', image: 'https://i.ibb.co/w5CfRSd/IMG-1954.jpg', desc: 'হাঁস ভুনা + খিচুড়ি + সালাদ' },
-                { id: 2, name: 'মেজবানি মাংস', price: 350, category: 'special', image: 'https://i.ibb.co/sJgTX2WR/IMG-1995.jpg', desc: 'বিফ + ডাল + নেহারি' },
-                { id: 3, name: 'কাচ্চি বিরিয়ানি', price: 300, category: 'rice', image: 'https://i.ibb.co/zW8kHGVK/IMG-2234.jpg', desc: 'স্পেশাল কাচ্চি' },
-                { id: 4, name: 'সাদা ভাত', price: 15, category: 'rice', image: 'https://i.ibb.co/d0DTKGDn/IMG-2205.jpg', desc: 'মিনিকেট চালের ভাত' },
-                { id: 17, name: 'রসমালাই', price: 450, category: 'dessert', image: 'https://i.ibb.co/hRCdP3Hy/IMG-2236.jpg', desc: 'খাঁটি রসমালাই (১ কেজি)' }
+                {
+                    id: 1,
+                    name: 'শীতকালীন হাঁস স্পেশাল',
+                    price: 300,
+                    category: 'special',
+                    image: 'https://i.ibb.co/vCm5Mz6Q/IMG-1612.jpg',
+                    description: 'হাঁস ভুনা + খিচুড়ি + সালাদ + ড্রিংকস + পানি'
+                },
+                {
+                    id: 2,
+                    name: 'শুক্রবার মেজবানি স্পেশাল',
+                    price: 350,
+                    category: 'special',
+                    image: 'https://i.ibb.co/vCm5Mz6Q/IMG-1612.jpg',
+                    description: 'বিফ + রাইস + চনার ডাল + নেহারি + সালাদ + ড্রিংকস + পানি'
+                },
+                {
+                    id: 3,
+                    name: 'সাদা ভাত',
+                    price: 15,
+                    category: 'rice',
+                    image: 'https://i.ibb.co/vCm5Mz6Q/IMG-1612.jpg',
+                    description: 'ফ্রেশ ও সুগন্ধি সাদা ভাত'
+                },
+                {
+                    id: 4,
+                    name: 'মোরগ পোলাউ',
+                    price: 160,
+                    category: 'rice',
+                    image: 'https://i.ibb.co/vCm5Mz6Q/IMG-1612.jpg',
+                    description: 'মসলাদার মোরগ পোলাউ'
+                },
+                {
+                    id: 5,
+                    name: 'স্পেশাল কাচ্চি',
+                    price: 300,
+                    category: 'rice',
+                    image: 'https://i.ibb.co/vCm5Mz6Q/IMG-1612.jpg',
+                    description: 'স্পেশাল কাচ্চি বিরিয়ানি'
+                },
+                {
+                    id: 6,
+                    name: 'বিফ খিচুড়ি',
+                    price: 280,
+                    category: 'rice',
+                    image: 'https://i.ibb.co/vCm5Mz6Q/IMG-1612.jpg',
+                    description: 'বিফ খিচুড়ি'
+                },
+                {
+                    id: 7,
+                    name: 'চিকেন খিচুড়ি',
+                    price: 180,
+                    category: 'rice',
+                    image: 'https://i.ibb.co/vCm5Mz6Q/IMG-1612.jpg',
+                    description: 'চিকেন খিচুড়ি'
+                },
+                {
+                    id: 8,
+                    name: 'মাটন খিচুড়ি',
+                    price: 300,
+                    category: 'rice',
+                    image: 'https://i.ibb.co/vCm5Mz6Q/IMG-1612.jpg',
+                    description: 'মাটন খিচুড়ি'
+                },
+                {
+                    id: 9,
+                    name: 'বিফ ভুনা',
+                    price: 200,
+                    category: 'meat',
+                    image: 'https://i.ibb.co/vCm5Mz6Q/IMG-1612.jpg',
+                    description: 'মসলাদার বিফ ভুনা'
+                },
+                {
+                    id: 10,
+                    name: 'বিফ কালা ভুনা',
+                    price: 220,
+                    category: 'meat',
+                    image: 'https://i.ibb.co/vCm5Mz6Q/IMG-1612.jpg',
+                    description: 'কালা ভুনা'
+                },
+                {
+                    id: 11,
+                    name: 'চিকেন রোস্ট',
+                    price: 120,
+                    category: 'meat',
+                    image: 'https://i.ibb.co/vCm5Mz6Q/IMG-1612.jpg',
+                    description: 'চিকেন রোস্ট'
+                },
+                {
+                    id: 12,
+                    name: 'চিকেন চাপ',
+                    price: 150,
+                    category: 'meat',
+                    image: 'https://i.ibb.co/vCm5Mz6Q/IMG-1612.jpg',
+                    description: 'চিকেন চাপ'
+                },
+                {
+                    id: 13,
+                    name: 'ইলিশ',
+                    price: 'বাজার দর',
+                    category: 'fish',
+                    image: 'https://i.ibb.co/vCm5Mz6Q/IMG-1612.jpg',
+                    description: 'তাজা ইলিশ মাছ'
+                },
+                {
+                    id: 14,
+                    name: 'ভর্তা',
+                    price: 20,
+                    category: 'side',
+                    image: 'https://i.ibb.co/vCm5Mz6Q/IMG-1612.jpg',
+                    description: 'মাছ/শুটকি/শিম ভর্তা'
+                },
+                {
+                    id: 15,
+                    name: 'আলু ভর্তা',
+                    price: 10,
+                    category: 'side',
+                    image: 'https://i.ibb.co/vCm5Mz6Q/IMG-1612.jpg',
+                    description: 'আলু ভর্তা'
+                },
+                {
+                    id: 16,
+                    name: 'পরটা',
+                    price: 15,
+                    category: 'bread',
+                    image: 'https://i.ibb.co/vCm5Mz6Q/IMG-1612.jpg',
+                    description: 'পরটা'
+                },
+                {
+                    id: 17,
+                    name: 'রসমালাই',
+                    price: 450,
+                    category: 'dessert',
+                    image: 'https://i.ibb.co/vCm5Mz6Q/IMG-1612.jpg',
+                    description: 'রসমালাই (কেজি)'
+                },
+                {
+                    id: 18,
+                    name: 'রসগোল্লা',
+                    price: 380,
+                    category: 'dessert',
+                    image: 'https://i.ibb.co/vCm5Mz6Q/IMG-1612.jpg',
+                    description: 'রসগোল্লা'
+                },
+                {
+                    id: 19,
+                    name: 'কালোজাম',
+                    price: 350,
+                    category: 'dessert',
+                    image: 'https://i.ibb.co/vCm5Mz6Q/IMG-1612.jpg',
+                    description: 'কালোজাম'
+                },
+                {
+                    id: 20,
+                    name: 'দধি',
+                    price: 300,
+                    category: 'dessert',
+                    image: 'https://i.ibb.co/vCm5Mz6Q/IMG-1612.jpg',
+                    description: 'দধি'
+                }
             ];
 
-            const filteredItems = activeCategory === 'all' ? menuItems : menuItems.filter(i => i.category === activeCategory);
+            const categories = [
+                { id: 'all', name: 'সব খাবার', icon: Utensils },
+                { id: 'special', name: 'স্পেশাল অফার', icon: Gift },
+                { id: 'rice', name: 'ভাত ও বিরিয়ানি', icon: Wheat },
+                { id: 'meat', name: 'মাংস ও গ্রিল', icon: Package },
+                { id: 'fish', name: 'তাজা মাছ', icon: Fish },
+                { id: 'side', name: 'ভর্তা ও ভাজি', icon: Utensils },
+                { id: 'bread', name: 'রুটি ও নাস্তা', icon: Package },
+                { id: 'dessert', name: 'মিষ্টান্ন', icon: Gift }
+            ];
 
-            // ইমেজ লোড না হলে ডিফল্ট ছবি দেখানোর ফাংশন
-            const handleImageError = (e) => {
-                e.target.src = 'https://placehold.co/300x200/ff0000/ffffff?text=Image+Not+Found';
-            };
+            const filteredItems = activeCategory === 'all' 
+                ? menuItems 
+                : menuItems.filter(item => item.category === activeCategory);
+
+            const specialOffers = [
+                {
+                    id: 1,
+                    name: 'শীতকালীন হাঁস স্পেশাল',
+                    price: 300,
+                    description: 'হাঁস ভুনা + খিচুড়ি + সালাদ + ড্রিংকস + পানি',
+                    image: 'https://i.ibb.co/vCm5Mz6Q/IMG-1612.jpg'
+                },
+                {
+                    id: 2,
+                    name: 'শুক্রবার মেজবানি স্পেশাল',
+                    price: 350,
+                    description: 'বিফ + রাইস + চনার ডাল + নেহারি + সালাদ + ড্রিংকস + পানি',
+                    image: 'https://i.ibb.co/vCm5Mz6Q/IMG-1612.jpg'
+                }
+            ];
+
+            // Customer Reviews Data
+            const reviews = [
+                {
+                    id: 1,
+                    name: 'মোঃ রহিম উদ্দিন',
+                    rating: 5,
+                    comment: 'খুবই স্বাদিষ্ট খাবার! বিশেষ করে খিচুড়ি অসাধারণ। ডেলিভারিও সময়মতো হয়েছে।',
+                    date: 'জানুয়ারি ২০২৬'
+                },
+                {
+                    id: 2,
+                    name: 'সালমা বেগম',
+                    rating: 5,
+                    comment: 'মিষ্টান্ন খুব ভালো মানের। রসমালাই একদম তাজা ছিল। আবার অর্ডার করব।',
+                    date: 'ডিসেম্বর ২০২৫'
+                },
+                {
+                    id: 3,
+                    name: 'করিম মিয়া',
+                    rating: 5,
+                    comment: 'নোয়াখালীর সেরা রেস্টুরেন্ট! বিরিয়ানি এবং কালা ভুনা চমৎকার।',
+                    date: 'জানুয়ারি ২০২৬'
+                }
+            ];
+
+            // Logo Component
+            const Logo = () => (
+                <div className="flex items-center cursor-pointer" onClick={() => window.scrollTo(0,0)}>
+                   <img 
+                      src="https://i.ibb.co/vCm5Mz6Q/IMG-1612.jpg" 
+                      alt="Vhat Ghor Logo" 
+                      className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm mr-2" 
+                      loading="eager"
+                    />
+                    <span className="text-xl font-bold text-gray-900">ভাত ঘর</span>
+                </div>
+            );
 
             return (
-                <div className="min-h-screen">
-                    {/* Navbar */}
-                    <nav className="bg-white shadow sticky top-0 z-50 px-4 py-3">
-                        <div className="flex justify-between items-center max-w-6xl mx-auto">
-                            <div className="flex items-center gap-3 font-bold text-lg md:text-xl text-red-600">
-                                <img 
-                                    src="https://i.ibb.co/vCm5Mz6Q/IMG-1612.jpg" 
-                                    alt="Vhat Ghor Logo" 
-                                    className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover border-2 border-red-100 shadow-sm" 
-                                />
-                                <span className="hidden sm:inline">ভাত ঘর হোটেল রেস্টুরেন্ট এন্ড মিষ্টান্ন</span>
-                                <span className="sm:hidden">ভাত ঘর</span>
-                            </div>
-                            <div className="flex gap-4 items-center">
-                                <a href="tel:+8801336613481" className="bg-green-100 p-2 rounded-full text-green-600 hover:bg-green-200 transition">📞</a>
-                                <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden p-2 text-gray-600 hover:text-red-600">☰</button>
-                            </div>
-                        </div>
-                    </nav>
-                    
-                    {/* Mobile Menu */}
-                    {isMenuOpen && (
-                        <div className="bg-white border-b p-4 flex flex-col gap-3 md:hidden shadow-lg animate-fade-in">
-                            <a href="#home" className="text-gray-700 hover:text-red-600 font-medium" onClick={() => setIsMenuOpen(false)}>হোম</a>
-                            <a href="#menu" className="text-gray-700 hover:text-red-600 font-medium" onClick={() => setIsMenuOpen(false)}>মেনু</a>
-                            <a href="#contact" className="text-gray-700 hover:text-red-600 font-medium" onClick={() => setIsMenuOpen(false)}>যোগাযোগ</a>
-                        </div>
-                    )}
+                <div className="min-h-screen bg-gray-50 font-sans">
+                    {/* Header */}
+                    <header className="bg-white shadow-sm sticky top-0 z-50">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="flex justify-between items-center h-16">
+                                <Logo />
 
-                    {/* Hero */}
-                    <header id="home" className="bg-gradient-to-r from-red-600 to-red-800 text-white py-20 text-center px-4">
-                        <h1 className="text-3xl md:text-5xl font-bold mb-4">ভাত ঘর হোটেল রেস্টুরেন্ট এন্ড মিষ্টান্ন</h1>
-                        <p className="mb-8 text-lg md:text-xl text-red-100">নোয়াখালীর ঐতিহ্যবাহী স্বাদের সমাহার</p>
-                        <a href="#menu" className="bg-white text-red-600 px-8 py-3 rounded-full font-bold shadow-lg hover:bg-gray-100 transition transform hover:scale-105 inline-block">মেনু দেখুন</a>
+                                {/* Desktop Navigation */}
+                                <nav className="hidden md:flex space-x-6">
+                                    <a href="#home" className="text-gray-900 hover:text-red-600 font-medium transition-colors">হোম</a>
+                                    <a href="#menu" className="text-gray-700 hover:text-red-600 transition-colors">মেনু</a>
+                                    <a href="#specials" className="text-gray-700 hover:text-red-600 transition-colors">স্পেশাল অফার</a>
+                                    <a href="#reviews" className="text-gray-700 hover:text-red-600 transition-colors">রিভিউ</a>
+                                    <a href="#about" className="text-gray-700 hover:text-red-600 transition-colors">আমাদের সম্পর্কে</a>
+                                    <a href="#contact" className="text-gray-700 hover:text-red-600 transition-colors">যোগাযোগ</a>
+                                </nav>
+
+                                {/* Contact Info */}
+                                <div className="flex items-center space-x-4">
+                                    <a href={\`tel:\${phoneNumber}\`} className="p-2 text-gray-700 hover:text-red-600 transition-colors">
+                                        <Phone className="h-5 w-5" />
+                                    </a>
+                                    <button 
+                                        onClick={handleQuickOrder}
+                                        className="relative p-2 text-gray-700 hover:text-red-600 transition-colors"
+                                    >
+                                        <ShoppingCart className="h-5 w-5" />
+                                    </button>
+
+                                    {/* Mobile menu button */}
+                                    <button 
+                                        className="md:hidden p-2 text-gray-700"
+                                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                                    >
+                                        {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Mobile Navigation */}
+                            {isMenuOpen && (
+                                <div className="md:hidden py-4 border-t fade-in">
+                                    <nav className="flex flex-col space-y-4">
+                                        <a href="#home" className="text-gray-900 hover:text-red-600 font-medium transition-colors" onClick={() => setIsMenuOpen(false)}>হোম</a>
+                                        <a href="#menu" className="text-gray-700 hover:text-red-600 transition-colors" onClick={() => setIsMenuOpen(false)}>মেনু</a>
+                                        <a href="#specials" className="text-gray-700 hover:text-red-600 transition-colors" onClick={() => setIsMenuOpen(false)}>স্পেশাল অফার</a>
+                                        <a href="#reviews" className="text-gray-700 hover:text-red-600 transition-colors" onClick={() => setIsMenuOpen(false)}>রিভিউ</a>
+                                        <a href="#about" className="text-gray-700 hover:text-red-600 transition-colors" onClick={() => setIsMenuOpen(false)}>আমাদের সম্পর্কে</a>
+                                        <a href="#contact" className="text-gray-700 hover:text-red-600 transition-colors" onClick={() => setIsMenuOpen(false)}>যোগাযোগ</a>
+                                    </nav>
+                                </div>
+                            )}
+                        </div>
                     </header>
 
-                    {/* Menu Tabs */}
-                    <section id="menu" className="py-16 px-4 max-w-6xl mx-auto">
-                        <h2 className="text-3xl font-bold text-center mb-8 text-gray-800">আমাদের মেনু</h2>
-                        <div className="flex flex-wrap justify-center gap-3 mb-10">
-                            {categories.map(cat => (
-                                <button 
-                                    key={cat.id}
-                                    onClick={() => setActiveCategory(cat.id)}
-                                    className={`px-5 py-2 rounded-full border transition-all ${activeCategory === cat.id ? 'bg-red-600 text-white shadow-md scale-105' : 'bg-white text-gray-700 hover:bg-red-50'}`}
-                                >
-                                    {cat.icon} {cat.name}
-                                </button>
-                            ))}
-                        </div>
+                    {/* Floating WhatsApp Button */}
+                    {showFloatingButton && (
+                        <button
+                            onClick={handleQuickOrder}
+                            className="fixed bottom-6 right-6 bg-green-500 text-white p-4 rounded-full shadow-2xl z-50 hover:bg-green-600 transition-all hover:scale-110 float-animation"
+                            aria-label="WhatsApp এ অর্ডার করুন"
+                        >
+                            <MessageCircle className="h-7 w-7" />
+                        </button>
+                    )}
 
-                        {/* Items Grid */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {filteredItems.map(item => (
-                                <div key={item.id} className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 hover:shadow-xl transition-shadow duration-300">
-                                    <div className="relative h-48 overflow-hidden">
+                    {/* Hero Section */}
+                    <section id="home" className="bg-gradient-to-r from-red-600 to-red-700 text-white py-20">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                            <h1 className="text-4xl md:text-5xl font-bold mb-6 fade-in">ভাত ঘর হোটেল রেস্টুরেন্ট এন্ড মিষ্টান্ন</h1>
+                            <p className="text-xl md:text-2xl mb-4 max-w-3xl mx-auto fade-in">
+                                নোয়াখালীর স্বাদে স্বাদিষ্ট খাবার এবং ঐতিহ্যবাহী মিষ্টান্ন
+                            </p>
+                            <div className="flex items-center justify-center gap-2 mb-8 text-yellow-300">
+                                <Clock className="h-5 w-5" />
+                                <p className="text-lg font-semibold">খোলা সময়: সকাল ৮:০০ - রাত ১০:০০ (প্রতিদিন)</p>
+                            </div>
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                                <a href="#contact" className="bg-white text-red-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-all hover:scale-105 inline-block shadow-lg">
+                                    অর্ডার করুন
+                                </a>
+                                <a href="#menu" className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-red-600 transition-all hover:scale-105 inline-block">
+                                    মেনু দেখুন
+                                </a>
+                            </div>
+                            <p className="mt-6 text-yellow-300 font-semibold text-lg">www.vatghorhotelonline.com</p>
+                        </div>
+                    </section>
+
+                    {/* Special Offers Section */}
+                    <section id="specials" className="py-16 bg-white">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="text-center mb-12">
+                                <h2 className="text-3xl font-bold text-gray-900 mb-4">🔥 স্পেশাল অফার 🔥</h2>
+                                <div className="w-20 h-1 bg-red-600 mx-auto mb-6"></div>
+                                <p className="text-gray-600 max-w-2xl mx-auto">
+                                    আমাদের স্পেশাল অফারগুলো একবার চেষ্টা করে দেখুন, আপনি আবার আসবেন!
+                                </p>
+                            </div>
+
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                {specialOffers.map((offer) => (
+                                    <div key={offer.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all border border-gray-100 hover:scale-105">
                                         <img 
-                                            src={item.image} 
-                                            alt={item.name} 
-                                            className="w-full h-full object-cover transform hover:scale-110 transition-transform duration-500"
-                                            onError={handleImageError}
+                                            src={offer.image} 
+                                            alt={offer.name}
+                                            className="w-full h-48 object-cover"
+                                            loading="lazy"
                                         />
-                                        <div className="absolute top-3 right-3 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-red-600 font-bold text-sm shadow-sm">
-                                            ৳{item.price}
+                                        <div className="p-6">
+                                            <h3 className="text-xl font-semibold text-gray-900 mb-2">{offer.name}</h3>
+                                            <p className="text-gray-600 mb-4">{offer.description}</p>
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-2xl font-bold text-red-600">৳{offer.price}</span>
+                                                <button 
+                                                    onClick={() => handleOrder(offer)}
+                                                    className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-all hover:scale-105 flex items-center gap-2 shadow-md"
+                                                >
+                                                    <ShoppingCart className="w-4 h-4" />
+                                                    অর্ডার করুন
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="p-5">
-                                        <h3 className="font-bold text-xl mb-2 text-gray-800">{item.name}</h3>
-                                        <p className="text-gray-500 text-sm mb-4 min-h-[40px]">{item.desc}</p>
-                                        <button 
-                                            onClick={() => handleOrder(item)} 
-                                            className="w-full bg-red-600 text-white py-2.5 rounded-lg font-medium hover:bg-red-700 transition flex items-center justify-center gap-2"
-                                        >
-                                            অর্ডার করুন (WhatsApp)
-                                        </button>
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Customer Reviews Section */}
+                    <section id="reviews" className="py-16 bg-gray-50">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="text-center mb-12">
+                                <h2 className="text-3xl font-bold text-gray-900 mb-4">⭐ কাস্টমার রিভিউ ⭐</h2>
+                                <div className="w-20 h-1 bg-red-600 mx-auto mb-6"></div>
+                                <p className="text-gray-600 max-w-2xl mx-auto">
+                                    আমাদের সন্তুষ্ট কাস্টমারদের মতামত দেখুন
+                                </p>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                {reviews.map((review) => (
+                                    <div key={review.id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                                        <div className="flex items-center mb-4">
+                                            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center text-red-600 font-bold text-xl mr-3">
+                                                {review.name.charAt(0)}
+                                            </div>
+                                            <div>
+                                                <h4 className="font-semibold text-gray-900">{review.name}</h4>
+                                                <p className="text-sm text-gray-500">{review.date}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex mb-3">
+                                            {[...Array(review.rating)].map((_, i) => (
+                                                <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
+                                            ))}
+                                        </div>
+                                        <p className="text-gray-600 leading-relaxed">{review.comment}</p>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="text-center mt-8">
+                                <a 
+                                    href="https://www.facebook.com/share/1BFJVsuQf9/?mibextid=wwXIfr" 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+                                >
+                                    <Facebook className="h-5 w-5" />
+                                    আরও রিভিউ দেখুন
+                                </a>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* About Section */}
+                    <section id="about" className="py-16 bg-white">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="text-center mb-12">
+                                <h2 className="text-3xl font-bold text-gray-900 mb-4">আমাদের সম্পর্কে</h2>
+                                <div className="w-20 h-1 bg-red-600 mx-auto mb-6"></div>
+                            </div>
+
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                                <div>
+                                    <h3 className="text-2xl font-semibold text-gray-900 mb-4">নোয়াখালীর গর্ব - ভাত ঘর</h3>
+                                    <p className="text-gray-600 mb-4 leading-relaxed">
+                                        ভাত ঘর হোটেল রেস্টুরেন্ট এন্ড মিষ্টান্ন নোয়াখালী জেলার একটি প্রতিষ্ঠিত খাবারের প্রতিষ্ঠান। 
+                                        আমরা ২০১০ সাল থেকে নোয়াখালীবাসীকে স্বাদিষ্ট ও স্বাস্থ্যকর খাবার সরবরাহ করে আসছি।
+                                    </p>
+                                    <p className="text-gray-600 mb-6 leading-relaxed">
+                                        আমাদের বিশেষত্ব হলো নোয়াখালীর ঐতিহ্যবাহী রেসিপি এবং ফ্রেশ উপকরণ ব্যবহার করে খাবার তৈরি করা। 
+                                        আমাদের মিষ্টান্নগুলো হাতে তৈরি এবং সম্পূর্ণ প্রাকৃতিক উপাদান দিয়ে তৈরি।
+                                    </p>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                        <div className="flex items-start">
+                                            <Clock className="h-6 w-6 text-red-600 mr-3 mt-1 flex-shrink-0" />
+                                            <div>
+                                                <p className="font-semibold">খোলা সময়</p>
+                                                <p className="text-gray-600">সকাল ৮:০০ - রাত ১০:০০</p>
+                                                <p className="text-sm text-gray-500">(প্রতিদিন)</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-start">
+                                            <MapPin className="h-6 w-6 text-red-600 mr-3 mt-1 flex-shrink-0" />
+                                            <div>
+                                                <p className="font-semibold">অবস্থান</p>
+                                                <p className="text-gray-600 text-sm">এম রহমান প্লাজা, মেইন রোড, মাইজদী, নোয়াখালী</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            ))}
+
+                                <div className="bg-gray-100 rounded-lg h-96 flex items-center justify-center overflow-hidden">
+                                    <img 
+                                        src="https://i.ibb.co/vCm5Mz6Q/IMG-1612.jpg" 
+                                        alt="ভাত ঘর রেস্টুরেন্ট"
+                                        className="w-full h-full object-cover rounded-lg hover:scale-105 transition-transform duration-500"
+                                        loading="lazy"
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </section>
 
-                    {/* Contact Form */}
-                    <section id="contact" className="py-16 bg-gray-50 px-4">
-                        <div className="max-w-lg mx-auto bg-white p-8 rounded-xl shadow-lg border border-gray-100">
-                            <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">সরাসরি অর্ডার পাঠান</h2>
-                            <form onSubmit={handleCustomOrder} className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">আপনার নাম</label>
-                                    <input className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none" placeholder="নাম লিখুন" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">মোবাইল নম্বর</label>
-                                    <input className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none" placeholder="017..." type="tel" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} required />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">ঠিকানা</label>
-                                    <textarea className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none" rows="2" placeholder="পূর্ণ ঠিকানা লিখুন" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} required></textarea>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">কি লাগবে?</label>
-                                    <textarea className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none" rows="3" placeholder="খাবারের নাম ও পরিমাণ লিখুন..." value={formData.details} onChange={e => setFormData({...formData, details: e.target.value})} required></textarea>
-                                </div>
-                                <button className="w-full bg-green-600 text-white py-3 rounded-lg font-bold hover:bg-green-700 transition shadow-md">অর্ডার কনফার্ম করুন</button>
-                            </form>
+                    {/* Menu Section */}
+                    <section id="menu" className="py-16 bg-gray-50">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="text-center mb-12">
+                                <h2 className="text-3xl font-bold text-gray-900 mb-4">আমাদের মেনু</h2>
+                                <div className="w-20 h-1 bg-red-600 mx-auto mb-6"></div>
+                                <p className="text-gray-600 max-w-2xl mx-auto">
+                                    নোয়াখালীর স্বাদে তৈরি আমাদের বিশেষ খাবার এবং মিষ্টান্ন
+                                </p>
+                            </div>
+
+                            {/* Category Tabs */}
+                            <div className="flex flex-wrap justify-center gap-4 mb-12">
+                                {categories.map((category) => {
+                                    const IconComponent = category.icon;
+                                    return (
+                                        <button
+                                            key={category.id}
+                                            onClick={() => setActiveCategory(category.id)}
+                                            className={\`flex items-center px-6 py-3 rounded-full font-medium transition-all \${
+                                                activeCategory === category.id
+                                                    ? 'bg-red-600 text-white shadow-lg scale-105'
+                                                    : 'bg-white text-gray-700 hover:bg-red-50 border border-gray-200'
+                                            }\`}
+                                        >
+                                            <IconComponent className="h-4 w-4 mr-2" />
+                                            {category.name}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Menu Items */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                                {filteredItems.map((item) => (
+                                    <div key={item.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all group hover:scale-105">
+                                        <div className="relative overflow-hidden">
+                                            <img 
+                                                src={item.image} 
+                                                alt={item.name}
+                                                className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
+                                                loading="lazy"
+                                            />
+                                            <div className="absolute top-2 left-2 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-md">
+                                                {typeof item.price === 'number' ? \`৳\${item.price}\` : item.price}
+                                            </div>
+                                        </div>
+
+                                        <div className="p-6">
+                                            <h3 className="text-lg font-semibold text-gray-900 mb-2">{item.name}</h3>
+                                            <p className="text-gray-600 text-sm mb-4 line-clamp-2">{item.description}</p>
+
+                                            <button 
+                                                onClick={() => handleOrder(item)}
+                                                className="w-full bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-all hover:scale-105 text-sm flex items-center justify-center gap-2 shadow-md"
+                                            >
+                                                <ShoppingCart className="w-4 h-4" />
+                                                অর্ডার করুন
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </section>
 
-                    <footer className="bg-gray-900 text-white text-center py-8 mt-10">
-                        <div className="max-w-6xl mx-auto px-4">
-                            <h3 className="text-xl font-bold mb-2">ভাত ঘর হোটেল রেস্টুরেন্ট এন্ড মিষ্টান্ন</h3>
-                            <p className="text-gray-400 mb-4">এম রহমান প্লাজা, মেইন রোড, মাইজদী, নোয়াখালী</p>
-                            <p className="text-gray-500 text-sm">© ২০২৬ ভাত ঘর হোটেল রেস্টুরেন্ট | সর্বস্বত্ব সংরক্ষিত</p>
+                    {/* Features Section */}
+                    <section className="py-16 bg-red-600 text-white">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
+                                <div className="fade-in">
+                                    <Utensils className="h-12 w-12 mx-auto mb-4" />
+                                    <h3 className="text-xl font-semibold mb-2">ফ্রেশ উপকরণ</h3>
+                                    <p className="text-red-100">প্রতিদিন সকালে ফ্রেশ উপকরণ দিয়ে খাবার তৈরি</p>
+                                </div>
+                                <div className="fade-in">
+                                    <Heart className="h-12 w-12 mx-auto mb-4" />
+                                    <h3 className="text-xl font-semibold mb-2">হাতে তৈরি মিষ্টান্ন</h3>
+                                    <p className="text-red-100">ঐতিহ্যবাহী পদ্ধতিতে তৈরি মিষ্টান্ন</p>
+                                </div>
+                                <div className="fade-in">
+                                    <Truck className="h-12 w-12 mx-auto mb-4" />
+                                    <h3 className="text-xl font-semibold mb-2">ফ্রি ডেলিভারি</h3>
+                                    <p className="text-red-100">নোয়াখালী সদরে ফ্রি হোম ডেলিভারি</p>
+                                </div>
+                                <div className="fade-in">
+                                    <Award className="h-12 w-12 mx-auto mb-4" />
+                                    <h3 className="text-xl font-semibold mb-2">সেরা মান</h3>
+                                    <p className="text-red-100">১৫+ বছরের অভিজ্ঞতা এবং বিশ্বস্ত সেবা</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Contact Section */}
+                    <section id="contact" className="py-16 bg-white">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="text-center mb-12">
+                                <h2 className="text-3xl font-bold text-gray-900 mb-4">যোগাযোগ ও অর্ডার</h2>
+                                <div className="w-20 h-1 bg-red-600 mx-auto mb-6"></div>
+                            </div>
+
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                                <div>
+                                    <h3 className="text-2xl font-semibold text-gray-900 mb-6">আমাদের ঠিকানা</h3>
+                                    <div className="space-y-6">
+                                        <div className="flex items-start">
+                                            <MapPin className="h-6 w-6 text-red-600 mt-1 mr-4 flex-shrink-0" />
+                                            <div>
+                                                <p className="font-semibold text-lg mb-1">ঠিকানা</p>
+                                                <p className="text-gray-600">এম রহমান প্লাজা, মেইন রোড, মাইজদী, নোয়াখালী</p>
+                                                <p className="text-gray-600 mt-1">নোয়াখালী সুপার মার্কেটের পশ্চিমে মেইন রোডের পশ্চিম পাশে</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-start">
+                                            <Phone className="h-6 w-6 text-red-600 mt-1 mr-4 flex-shrink-0" />
+                                            <div>
+                                                <p className="font-semibold text-lg mb-1">ফোন (অর্ডার ও বুকিং)</p>
+                                                <a href={\`tel:\${phoneNumber}\`} className="text-gray-600 font-mono text-xl hover:text-red-600 transition-colors">
+                                                    ০১৩৩৬-৬১৩৪৮১
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-start">
+                                            <Clock className="h-6 w-6 text-red-600 mt-1 mr-4 flex-shrink-0" />
+                                            <div>
+                                                <p className="font-semibold text-lg mb-1">খোলা সময়</p>
+                                                <p className="text-gray-600">সকাল ৮:০০ - রাত ১০:০০</p>
+                                                <p className="text-sm text-gray-500">(সপ্তাহের সব দিন)</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-start">
+                                            <Facebook className="h-6 w-6 text-red-600 mt-1 mr-4 flex-shrink-0" />
+                                            <div>
+                                                <p className="font-semibold text-lg mb-1">ফেসবুক</p>
+                                                <a href="https://www.facebook.com/share/1BFJVsuQf9/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                                                    আমাদের ফেসবুক পেজ ভিজিট করুন
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-8">
+                                        <h4 className="font-semibold text-lg mb-4">সোশ্যাল মিডিয়া</h4>
+                                        <div className="flex space-x-4">
+                                            <a href="https://www.facebook.com/share/1BFJVsuQf9/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" className="bg-blue-600 text-white p-3 rounded-full hover:bg-blue-700 transition-all hover:scale-110 shadow-md">
+                                                <Facebook className="h-5 w-5" />
+                                            </a>
+                                            <a href="#" className="bg-pink-600 text-white p-3 rounded-full hover:bg-pink-700 transition-all hover:scale-110 shadow-md">
+                                                <Instagram className="h-5 w-5" />
+                                            </a>
+                                            <a href={\`https://wa.me/\${phoneNumber}\`} target="_blank" rel="noopener noreferrer" className="bg-green-500 text-white p-3 rounded-full hover:bg-green-600 transition-all hover:scale-110 shadow-md">
+                                                <MessageCircle className="h-5 w-5" />
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-gradient-to-br from-red-50 to-orange-50 p-8 rounded-lg border-2 border-red-100 shadow-lg">
+                                    <h3 className="text-2xl font-semibold text-gray-900 mb-6">অর্ডার পাঠান (হোয়াটসঅ্যাপ)</h3>
+                                    <form onSubmit={handleCustomOrder} className="space-y-4">
+                                        <div>
+                                            <label className="block text-gray-700 mb-2 font-medium">নাম *</label>
+                                            <input 
+                                                type="text" 
+                                                required
+                                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                                                placeholder="আপনার নাম লিখুন"
+                                                value={formData.name}
+                                                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-gray-700 mb-2 font-medium">ফোন নম্বর *</label>
+                                            <input 
+                                                type="tel" 
+                                                required
+                                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                                                placeholder="০১XXXXXXXXX"
+                                                value={formData.phone}
+                                                onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-gray-700 mb-2 font-medium">ঠিকানা *</label>
+                                            <textarea 
+                                                rows="2"
+                                                required
+                                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                                                placeholder="আপনার সম্পূর্ণ ঠিকানা"
+                                                value={formData.address}
+                                                onChange={(e) => setFormData({...formData, address: e.target.value})}
+                                            ></textarea>
+                                        </div>
+                                        <div>
+                                            <label className="block text-gray-700 mb-2 font-medium">অর্ডার ডিটেইলস *</label>
+                                            <textarea 
+                                                rows="3"
+                                                required
+                                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                                                placeholder="কি কি খাবার অর্ডার করতে চান বিস্তারিত লিখুন..."
+                                                value={formData.details}
+                                                onChange={(e) => setFormData({...formData, details: e.target.value})}
+                                            ></textarea>
+                                        </div>
+                                        <button 
+                                            type="submit"
+                                            className="w-full bg-green-500 text-white py-4 rounded-lg font-semibold hover:bg-green-600 transition-all hover:scale-105 flex items-center justify-center gap-2 shadow-lg"
+                                        >
+                                            <MessageCircle className="h-5 w-5" />
+                                            অর্ডার কনফার্ম করুন (WhatsApp)
+                                        </button>
+                                        <p className="text-sm text-gray-600 text-center mt-2">
+                                            * চিহ্নিত ফিল্ডগুলো অবশ্যই পূরণ করতে হবে
+                                        </p>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Footer */}
+                    <footer className="bg-gray-900 text-white py-12">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="text-center">
+                                <div className="flex items-center justify-center mb-4">
+                                    <img 
+                                        src="https://i.ibb.co/vCm5Mz6Q/IMG-1612.jpg" 
+                                        alt="ভাত ঘর লোগো"
+                                        className="w-12 h-12 rounded-full object-cover mr-3"
+                                        loading="lazy"
+                                    />
+                                    <span className="text-2xl font-bold">ভাত ঘর</span>
+                                </div>
+                                <p className="text-gray-400 mb-4">
+                                    নোয়াখালীর স্বাদে স্বাদিষ্ট খাবার এবং ঐতিহ্যবাহী মিষ্টান্ন
+                                </p>
+                                <p className="text-gray-400 mb-2 font-mono text-lg">
+                                    www.vatghorhotelonline.com
+                                </p>
+                                <p className="text-gray-400 mb-4">
+                                    <Phone className="inline h-4 w-4 mr-1" />
+                                    ০১৩৩৬-৬১৩৪৮১
+                                </p>
+                                <p className="text-gray-400 mb-4">
+                                    <MapPin className="inline h-4 w-4 mr-1" />
+                                    এম রহমান প্লাজা, মেইন রোড, মাইজদী, নোয়াখালী
+                                </p>
+                                <div className="border-t border-gray-800 pt-8 mt-8">
+                                    <p className="text-gray-500 text-sm">
+                                        &copy; {new Date().getFullYear()} ভাত ঘর হোটেল রেস্টুরেন্ট এন্ড মিষ্টান্ন। সর্বস্বত্ব সংরক্ষিত।
+                                    </p>
+                                    <p className="text-gray-600 text-xs mt-2">
+                                        Developed with ❤️ for Noakhali
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </footer>
                 </div>
