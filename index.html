@@ -6,15 +6,15 @@
   <title>ভাত ঘর হোটেল রেস্টুরেন্ট এন্ড মিষ্টান্ন - নোয়াখালীর সেরা রেস্টুরেন্ট</title>
 
   <!-- SEO Meta Tags -->
-  <meta name="description" content="ভাত ঘর - নোয়াখালীর সেরা রেস্টুরেন্ট। স্পেশাল বিরিয়ানি, খিচুড়ি, হাঁসের মাংস এবং ঐতিহ্যবাহী মিষ্টান্ন। হোম ডেলিভারি সেবা উপলব্ধ।" />
-  <meta name="keywords" content="নোয়াখালী রেস্টুরেন্ট, বিরিয়ানি, খিচুড়ি, মিষ্টান্ন, হোম ডেলিভারি, ভাত ঘর, অনলাইন খাবার অর্ডার" />
-  <meta name="author" content="ভাত ঘর হোটেল রেস্টুরেন্ট" />
+  <meta name="description" content="ভাত ঘর হোটেল রেস্টুরেন্ট এন্ড মিষ্টান্ন - নোয়াখালীর সেরা রেস্টুরেন্ট। স্পেশাল বিরিয়ানি, খিচুড়ি, হাঁসের মাংস এবং ঐতিহ্যবাহী মিষ্টান্ন। হোম ডেলিভারি সেবা উপলব্ধ।" />
+  <meta name="keywords" content="ভাত ঘর হোটেল রেস্টুরেন্ট এন্ড মিষ্টান্ন, বিরিয়ানি, খিচুড়ি, মিষ্টান্ন, হোম ডেলিভারি, নোয়াখালী রেস্টুরেন্ট, অনলাইন খাবার অর্ডার" />
+  <meta name="author" content="ভাত ঘর হোটেল রেস্টুরেন্ট এন্ড মিষ্টান্ন" />
   <meta name="robots" content="index, follow" />
 
   <!-- Open Graph Meta Tags -->
   <meta property="og:title" content="ভাত ঘর হোটেল রেস্টুরেন্ট এন্ড মিষ্টান্ন" />
   <meta property="og:description" content="নোয়াখালীর স্বাদে স্বাদিষ্ট খাবার এবং ঐতিহ্যবাহী মিষ্টান্ন। হোম ডেলিভারি সেবা। বিকাশ ও নগদে পেমেন্ট সুবিধা।" />
-  <meta property="og:image" content="https://i.ibb.co/vCm5Mz6Q/IMG-1612.jpg" />
+  <meta property="og:image" content="https://drive.google.com/uc?export=view&id=13owcagqYDkxZBhoO74kXehtPdviZ1Rij" />
   <meta property="og:url" content="https://www.vatghorhotelonline.com" />
   <meta property="og:type" content="restaurant" />
 
@@ -60,12 +60,14 @@
       const [showFloatingButton, setShowFloatingButton] = useState(false);
       const [favorites, setFavorites] = useState([]);
       const [showOrderTracking, setShowOrderTracking] = useState(false);
-      const [orderStatus, setOrderStatus] = useState(0); // 0: Pending, 1: Preparing, 2: On Way, 3: Delivered
+      const [complaintText, setComplaintText] = useState("");
 
-      const phoneNumber = "8801336613481";
+      // Numbers
+      const mainPhoneNumber = "8801336613481"; // For Orders
+      const paymentNumberDisplay = "01336-613481"; // Displayed on UI
+      const complaintWhatsApp = "8801771514600"; // Hidden complaint number
       const facebookPageUrl = "https://www.facebook.com/share/1BFJVsuQf9/?mibextid=wwXIfr";
 
-      // Load favorites from local storage
       useEffect(() => {
         const savedFavs = localStorage.getItem('vatghor_favorites');
         if (savedFavs) setFavorites(JSON.parse(savedFavs));
@@ -96,7 +98,7 @@
             <div class="text-left">
               <p class="font-bold mb-2">${item.name}</p>
               <p class="mb-4">দাম: ${priceText}</p>
-              <p class="text-sm text-gray-600 mb-2">ডেলিভারি সময়: ৩০-৪৫ মিনিট</p>
+              <p class="text-sm text-gray-600 mb-2">ডেলিভারি সময়: ${item.time}</p>
             </div>
           `,
           showCancelButton: true,
@@ -106,14 +108,14 @@
         }).then((result) => {
           if (result.isConfirmed) {
             const text = `আসসালামু আলাইকুম, আমি "${item.name}" (দাম: ${priceText}) অর্ডার করতে চাই। পেমেন্ট: ক্যাশ অন ডেলিভারি`;
-            window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`, "_blank");
+            window.open(`https://wa.me/${mainPhoneNumber}?text=${encodeURIComponent(text)}`, "_blank");
           }
         });
       };
 
       const handleQuickOrder = () => {
         window.open(
-          `https://wa.me/${phoneNumber}?text=${encodeURIComponent("আসসালামু আলাইকুম, আমি অর্ডার দিতে চাই।")}`,
+          `https://wa.me/${mainPhoneNumber}?text=${encodeURIComponent("আসসালামু আলাইকুম, আমি অর্ডার দিতে চাই।")}`,
           "_blank"
         );
       };
@@ -121,49 +123,88 @@
       const handleCustomOrder = (e) => {
         e.preventDefault();
 
-        // Payment method handling
         let paymentText = "Cash on Delivery";
-        if (formData.payment === "bkash") paymentText = "bKash Payment";
-        if (formData.payment === "nagad") paymentText = "Nagad Payment";
+        if (formData.payment === "bkash") paymentText = `bKash (Personal: ${paymentNumberDisplay})`;
+        if (formData.payment === "nagad") paymentText = `Nagad (Personal: ${paymentNumberDisplay})`;
 
         const text = `*নতুন অর্ডার রিকোয়েস্ট*\n------------------\nনাম: ${formData.name}\nফোন: ${formData.phone}\nঠিকানা: ${formData.address}\nঅর্ডার ডিটেইলস: ${formData.details}\nপেমেন্ট মেথড: ${paymentText}`;
 
-        window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`, "_blank");
+        window.open(`https://wa.me/${mainPhoneNumber}?text=${encodeURIComponent(text)}`, "_blank");
 
-        // Simulate order tracking start
         setShowOrderTracking(true);
-        setOrderStatus(1);
         Swal.fire({ icon: 'success', title: 'অর্ডার পাঠানো হয়েছে!', text: 'আপনার অর্ডারটি প্রসেসিং হচ্ছে।', timer: 2000 });
-
         setFormData({ name: "", phone: "", address: "", details: "", payment: "cod" });
       };
 
-      // Placeholder image helper
-      const ph = (text, w = 600, h = 400) =>
-        `https://placehold.co/${w}x${h}/e5e7eb/374151?text=${encodeURIComponent(text)}`;
+      const handleComplaintSubmit = (e) => {
+        e.preventDefault();
+        const msg = complaintText.trim();
+        if (!msg) {
+          Swal.fire({ icon: 'warning', title: 'খালি আছে', text: 'অনুগ্রহ করে অভিযোগ লিখুন।' });
+          return;
+        }
+        const text = `*কাস্টমার অভিযোগ/মতামত*\n------------------\n${msg}`;
+        // Sending to the specific complaint number
+        window.open(`https://wa.me/${complaintWhatsApp}?text=${encodeURIComponent(text)}`, "_blank");
+        
+        Swal.fire({ icon: 'success', title: 'জমা হয়েছে', text: 'আপনার মতামত গ্রহণ করা হয়েছে। ধন্যবাদ!', timer: 2000, showConfirmButton: false });
+        setComplaintText("");
+      };
 
       const menuItems = [
-        { id: 1, name: "শীতকালীন হাঁস স্পেশাল", price: 300, category: "special", image: ph("হাঁস ভুনা"), description: "হাঁস ভুনা + খিচুড়ি + সালাদ + ড্রিংকস + পানি", time: "45 min" },
-        { id: 2, name: "শুক্রবার মেজবানি স্পেশাল", price: 350, category: "special", image: ph("মেজবানি"), description: "বিফ + রাইস + চনার ডাল + নেহারি + সালাদ + ড্রিংকস + পানি", time: "50 min" },
-        { id: 3, name: "সাদা ভাত", price: 15, category: "rice", image: ph("সাদা ভাত"), description: "ফ্রেশ ও সুগন্ধি সাদা ভাত", time: "20 min" },
-        { id: 4, name: "মোরগ পোলাউ", price: 160, category: "rice", image: ph("মোরগ পোলাউ"), description: "মসলাদার মোরগ পোলাউ", time: "30 min" },
-        { id: 5, name: "স্পেশাল কাচ্চি", price: 300, category: "rice", image: ph("কাচ্চি"), description: "স্পেশাল কাচ্চি বিরিয়ানি", time: "35 min" },
-        { id: 6, name: "বিফ খিচুড়ি", price: 280, category: "rice", image: ph("বিফ খিচুড়ি"), description: "বিফ খিচুড়ি", time: "30 min" },
-        { id: 7, name: "চিকেন খিচুড়ি", price: 180, category: "rice", image: ph("চিকেন খিচুড়ি"), description: "চিকেন খিচুড়ি", time: "30 min" },
-        { id: 8, name: "মাটন খিচুড়ি", price: 300, category: "rice", image: ph("মাটন খিচুড়ি"), description: "মাটন খিচুড়ি", time: "40 min" },
-        { id: 9, name: "বিফ ভুনা", price: 200, category: "meat", image: ph("বিফ ভুনা"), description: "মসলাদার বিফ ভুনা", time: "30 min" },
-        { id: 10, name: "বিফ কালা ভুনা", price: 220, category: "meat", image: ph("কালা ভুনা"), description: "কালা ভুনা", time: "35 min" },
-        { id: 11, name: "চিকেন রোস্ট", price: 120, category: "meat", image: ph("চিকেন রোস্ট"), description: "চিকেন রোস্ট", time: "25 min" },
-        { id: 12, name: "চিকেন চাপ", price: 150, category: "meat", image: ph("চিকেন চাপ"), description: "চিকেন চাপ", time: "25 min" },
-        { id: 13, name: "ইলিশ", price: "বাজার দর", category: "fish", image: ph("ইলিশ"), description: "তাজা ইলিশ মাছ", time: "40 min" },
-        { id: 14, name: "ভর্তা", price: 20, category: "side", image: ph("ভর্তা"), description: "মাছ/শুটকি/শিম ভর্তা", time: "15 min" },
-        { id: 15, name: "আলু ভর্তা", price: 10, category: "side", image: ph("আলু ভর্তা"), description: "আলু ভর্তা", time: "15 min" },
-        { id: 16, name: "পরটা", price: 15, category: "bread", image: ph("পরটা"), description: "পরটা", time: "15 min" },
-        { id: 17, name: "রসমালাই", price: 450, category: "dessert", image: ph("রসমালাই"), description: "রসমালাই (কেজি)", time: "Instant" },
-        { id: 18, name: "রসগোল্লা", price: 380, category: "dessert", image: ph("রসগোল্লা"), description: "রসগোল্লা", time: "Instant" },
-        { id: 19, name: "কালোজাম", price: 350, category: "dessert", image: ph("কালোজাম"), description: "কালোজাম", time: "Instant" },
-        { id: 20, name: "দধি", price: 300, category: "dessert", image: ph("দধি"), description: "দধি", time: "Instant" }
+        { id: 1, name: "শীতকালীন হাঁস স্পেশাল", price: 300, category: "special", image: "https://drive.google.com/uc?export=view&id=1Ctu878Pk-Czei9jit7qk_IFyXH64ZXgc", description: "হাঁস ভুনা + খিচুড়ি + সালাদ + ড্রিংকস + পানি", time: "45 min" },
+        { id: 2, name: "শুক্রবার মেজবানি স্পেশাল", price: 350, category: "special", image: "https://drive.google.com/uc?export=view&id=1o6ro2nz4fBNGvKwOlRBPWRjg5L-xnUIg", description: "বিফ + রাইস + চনার ডাল + নেহারি + সালাদ + ড্রিংকস + পানি", time: "50 min" },
+        { id: 3, name: "সাদা ভাত", price: 15, category: "rice", image: "https://drive.google.com/uc?export=view&id=1ikC83QCANv407wPi3Sglnbf4igi3mUv6", description: "ফ্রেশ ও সুগন্ধি সাদা ভাত", time: "20 min" },
+        { id: 4, name: "মোরগ পোলাউ", price: 160, category: "rice", image: "https://drive.google.com/uc?export=view&id=1HWbSmWulOHR6fkM1aUmYb-H0tLawkokK", description: "মসলাদার মোরগ পোলাউ", time: "30 min" },
+        { id: 5, name: "স্পেশাল কাচ্চি", price: 300, category: "rice", image: "https://drive.google.com/uc?export=view&id=1gL16FgbvI489cqr8fyYdbsulRYeCFcez", description: "স্পেশাল কাচ্চি বিরিয়ানি", time: "35 min" },
+        { id: 6, name: "স্পেশাল ভুনা খিচুড়ি", price: 280, category: "rice", image: "https://drive.google.com/uc?export=view&id=1rNNt6_0TPJvV3xzsPcLe1z6haVDWG-44", description: "স্পেশাল ভুনা খিচুড়ি", time: "30 min" },
+        { id: 7, name: "বিফ খিচুড়ি", price: 280, category: "rice", image: "https://drive.google.com/uc?export=view&id=1gNr9nk69M9zedYTaCkbYeBnHCeAvvQVe", description: "বিফ খিচুড়ি", time: "30 min" },
+        { id: 8, name: "চিকেন খিচুড়ি", price: 180, category: "rice", image: "https://drive.google.com/uc?export=view&id=1vhXUpBO_2eCW51rDpstZ1qF0Oa9lZnO_", description: "চিকেন খিচুড়ি", time: "30 min" },
+        { id: 9, name: "মাটন খিচুড়ি", price: 300, category: "rice", image: "https://drive.google.com/uc?export=view&id=1YVYYROqREkCxnxOyK730inJKrTOG5STr", description: "মাটন খিচুড়ি", time: "40 min" },
+        { id: 10, name: "ভেজিটেবল খিচুড়ি", price: 120, category: "rice", image: "https://drive.google.com/uc?export=view&id=1E72VgCiMYa07woPkB8Q2bsQ1oK9GiOCH", description: "সবজি খিচুড়ি", time: "25 min" },
+        { id: 11, name: "বিফ ভুনা", price: 200, category: "meat", image: "https://drive.google.com/uc?export=view&id=1m8jGQvZu4HNmgxv1hlgo6OrZRdZbeku0", description: "মসলাদার বিফ ভুনা", time: "30 min" },
+        { id: 12, name: "বিফ কালা ভুনা", price: 220, category: "meat", image: "https://drive.google.com/uc?export=view&id=1eaoQKz8kKkEfFVPrcgGLXMw-1umMPFNq", description: "কালা ভুনা", time: "35 min" },
+        { id: 13, name: "চিকেন রোস্ট", price: 120, category: "meat", image: "https://drive.google.com/uc?export=view&id=1w4MXRrj34H1P8wkL1XeJPPlqpx3LZ6X4", description: "চিকেন রোস্ট", time: "25 min" },
+        { id: 14, name: "ঝাল ফ্রাই", price: 130, category: "meat", image: "https://drive.google.com/uc?export=view&id=1IDGluOUUKyvOWCMIrIvdLxFGNyJsOMhG", description: "চিকেন ঝাল ফ্রাই", time: "25 min" },
+        { id: 15, name: "মাটন রেজালা", price: 250, category: "meat", image: "https://drive.google.com/uc?export=view&id=1AsWlRVhmCOYIm7pu8khphQGmqH1o1wdY", description: "মাটন রেজালা", time: "35 min" },
+        { id: 16, name: "হাঁস ভুনা", price: 280, category: "meat", image: "https://drive.google.com/uc?export=view&id=1g6j5wYsy8h2iVBIe5jvW8JmXzeWFfoZJ", description: "হাঁস ভুনা (শুধু মাংস)", time: "30 min" },
+        { id: 17, name: "চিকেন গ্রিল", price: 100, category: "meat", image: "https://drive.google.com/uc?export=view&id=1aUSNWnHQZamea910PqMS4_5wt6IBS_QB", description: "কোয়ার্টার চিকেন গ্রিল", time: "20 min" },
+        { id: 18, name: "চিকেন চাপ", price: 150, category: "meat", image: "https://drive.google.com/uc?export=view&id=1ogJ7uP-A-_R_19juUWOhdVev5eOTFooR", description: "চিকেন চাপ", time: "20 min" },
+        { id: 19, name: "বিফ চাপ", price: 180, category: "meat", image: "https://drive.google.com/uc?export=view&id=1DcHO3lm6I6V4vDgN-GoPCSngom01zIiB", description: "বিফ চাপ", time: "25 min" },
+        { id: 20, name: "ইলিশ", price: "বাজার দর", category: "fish", image: "https://drive.google.com/uc?export=view&id=1bsnrsfSZuB7f8xmEeTInywW-94_bh3YJ", description: "তাজা ইলিশ মাছ", time: "40 min" },
+        { id: 21, name: "বোয়াল", price: "বাজার দর", category: "fish", image: "https://drive.google.com/uc?export=view&id=1wYRsgaOdsCvJkD9U_P2TI5UX9D8N9E0J", description: "বোয়াল মাছ ভুনা", time: "35 min" },
+        { id: 22, name: "রুই", price: 180, category: "fish", image: "https://drive.google.com/uc?export=view&id=1pmpTrkZrKHSRaUKBrpNUov9vIHgIcT0m", description: "রুই মাছ ভুনা", time: "30 min" },
+        { id: 23, name: "শিং", price: 250, category: "fish", image: "https://drive.google.com/uc?export=view&id=1jg7TVMKS2pJX5XvmWMtknR_4QbH-pPGo", description: "শিং মাছ ভুনা", time: "30 min" },
+        { id: 24, name: "পাবদা", price: 220, category: "fish", image: "https://drive.google.com/uc?export=view&id=1W-w8SDTr5uh1f5oSoRfXddON6VjSy0Oo", description: "পাবদা মাছের ঝোল", time: "25 min" },
+        { id: 25, name: "টেংরা", price: 200, category: "fish", image: "https://drive.google.com/uc?export=view&id=1DkNw6KA9BoheJNIMYDPsSlJJIxmY-DjR", description: "টেংরা মাছের চড়চড়ি", time: "25 min" },
+        { id: 26, name: "শোল / টাকি", price: 200, category: "fish", image: "https://drive.google.com/uc?export=view&id=1qLIrdN1l_nQriPmBsc3TkM1miscmDIwl", description: "শোল মাছ ভুনা", time: "30 min" },
+        { id: 27, name: "ভর্তা", price: 20, category: "side", image: "https://drive.google.com/uc?export=view&id=1_8rdftS1BruT-TLjN9bQfxPV5Q4LsNEn", description: "মাছ/শুটকি/শিম ভর্তা", time: "15 min" },
+        { id: 28, name: "আলু ভর্তা", price: 10, category: "side", image: "https://drive.google.com/uc?export=view&id=1JQq94a2NJNY8bRBqie1KMpwigJpgKqMk", description: "আলু ভর্তা", time: "15 min" },
+        { id: 29, name: "ভাজি", price: 20, category: "side", image: "https://drive.google.com/uc?export=view&id=1enAZF87M4-FzurjFbcmog7lEWGTkE3wy", description: "করলা/বেগুন/মিক্স ভাজি", time: "15 min" },
+        { id: 30, name: "মুগ ডাল", price: 30, category: "side", image: "https://drive.google.com/uc?export=view&id=1ZRDK0v3jdDU5g0dMacbpWVLEu-vxBEIY", description: "মুগ ডাল ভুনা", time: "15 min" },
+        { id: 31, name: "মুশরী/প্লেইন ডাল", price: 20, category: "side", image: "https://drive.google.com/uc?export=view&id=1A5veRdWWK20m91J7XJGl3YcE6gIlGJGP", description: "ঘন ডাল", time: "10 min" },
+        { id: 32, name: "পরটা", price: 15, category: "bread", image: "https://drive.google.com/uc?export=view&id=1qZDSPnqvj6yohYi0X17Rd-AOPQdvfjmX", description: "পরটা", time: "15 min" },
+        { id: 33, name: "নান রুটি", price: 30, category: "bread", image: "https://drive.google.com/uc?export=view&id=17JDLichClLbiZFJqNCIuptsHCm1ZAyaN", description: "নান রুটি", time: "15 min" },
+        { id: 34, name: "চমুচা", price: 10, category: "bread", image: "https://drive.google.com/uc?export=view&id=1uHvILu3asBiyBCuMY6WUxlZmojd4N9WK", description: "গরম চমুচা", time: "10 min" },
+        { id: 35, name: "সিংগারা", price: 10, category: "bread", image: "https://drive.google.com/uc?export=view&id=1nsfpuKoVzCN_m5I9eZOKcFO0fPMgWCdB", description: "গরম সিংগারা", time: "10 min" },
+        { id: 36, name: "দই চিড়া", price: 80, category: "dessert", image: "https://drive.google.com/uc?export=view&id=1Qe8HhD01ePmD3KXLmppT06oshy4Xpj5N", description: "দই চিড়া", time: "15 min" },
+        { id: 37, name: "লাচ্ছি", price: 60, category: "dessert", image: "https://drive.google.com/uc?export=view&id=1mT7KPFU1ImdOQGwCNLTVAhgLwDUzqUHz", description: "লাচ্ছি", time: "10 min" },
+        { id: 38, name: "ফালুদা", price: 100, category: "dessert", image: "https://drive.google.com/uc?export=view&id=1daXp51FSk5lZ5YzVGiHsSbfcK0c8gGwn", description: "ফালুদা", time: "15 min" },
+        { id: 39, name: "জুস", price: 50, category: "dessert", image: "https://drive.google.com/uc?export=view&id=1Dkt4I8TarI9eKdlvfwnpbOFNTUbi9eQw", description: "ফ্রেশ জুস", time: "10 min" },
+        { id: 40, name: "রসমালাই", price: 450, category: "dessert", image: "https://drive.google.com/uc?export=view&id=1em8PMlM47boDKL_GP1AVZG_-tArlU2ln", description: "রসমালাই (কেজি)", time: "Instant" },
+        { id: 41, name: "রসগোল্লা", price: 380, category: "dessert", image: "https://drive.google.com/uc?export=view&id=1m2biKCJ0RMkRLukS1nncnD9KQYf-Dc6A", description: "রসগোল্লা (কেজি)", time: "Instant" },
+        { id: 42, name: "কালোজাম", price: 350, category: "dessert", image: "https://drive.google.com/uc?export=view&id=1vikiuLrYm1eVSznOO8FKBpnF5zgjR3fI", description: "কালোজাম (কেজি)", time: "Instant" },
+        { id: 43, name: "খীর মোহন", price: 400, category: "dessert", image: "https://drive.google.com/uc?export=view&id=1BzrNW3zTvfQFC5UBRB-PB9muR6DzsRaz", description: "খীর মোহন (কেজি)", time: "Instant" },
+        { id: 44, name: "দধি", price: 300, category: "dessert", image: "https://drive.google.com/uc?export=view&id=1543mbz6T4BxtpyELxruHKgr4JzyTig5Q", description: "বগুড়ার দধি (১ কেজি)", time: "Instant" },
+        { id: 45, name: "জিলাপি", price: 200, category: "dessert", image: "https://drive.google.com/uc?export=view&id=1nRp5Jtz2OrbdfGX5iDiXyvN1WpHRa3DJ", description: "শাহী জিলাপি (কেজি)", time: "Instant" },
+        { id: 46, name: "নিমকি", price: 200, category: "bread", image: "https://drive.google.com/uc?export=view&id=13l1q0VXsZ_1FJZggnP9nFwNHA4bmuGis", description: "নিমকি (কেজি)", time: "Instant" },
       ];
+
+      const specialOffers = [
+        { id: 1, name: "শীতকালীন হাঁস স্পেশাল", price: 300, description: "হাঁস ভুনা + খিচুড়ি + সালাদ + ড্রিংকস + পানি", image: "https://drive.google.com/uc?export=view&id=1Ctu878Pk-Czei9jit7qk_IFyXH64ZXgc" },
+        { id: 2, name: "শুক্রবার মেজবানি স্পেশাল", price: 350, description: "বিফ + রাইস + চনার ডাল + নেহারি + সালাদ + ড্রিংকস + পানি", image: "https://drive.google.com/uc?export=view&id=1o6ro2nz4fBNGvKwOlRBPWRjg5L-xnUIg" }
+      ];
+
 
       const categories = [
         { id: "all", name: "সব খাবার", icon: "fa-utensils" },
@@ -173,23 +214,16 @@
         { id: "fish", name: "তাজা মাছ", icon: "fa-fish" },
         { id: "side", name: "ভর্তা ও ভাজি", icon: "fa-leaf" },
         { id: "bread", name: "রুটি ও নাস্তা", icon: "fa-bread-slice" },
-        { id: "dessert", name: "মিষ্টান্ন", icon: "fa-cake-candles" }
+        { id: "dessert", name: "মিষ্টান্ন ও পানীয়", icon: "fa-glass-water" }
       ];
 
       const filteredItems = activeCategory === "all" ? menuItems : menuItems.filter((item) => item.category === activeCategory);
-
-      // Filter only saved favorites
       const savedItems = menuItems.filter(item => favorites.includes(item.id));
-
-      const specialOffers = [
-        { id: 1, name: "শীতকালীন হাঁস স্পেশাল", price: 300, description: "হাঁস ভুনা + খিচুড়ি + সালাদ + ড্রিংকস + পানি", image: ph("হাঁস স্পেশাল", 900, 500) },
-        { id: 2, name: "শুক্রবার মেজবানি স্পেশাল", price: 350, description: "বিফ + রাইস + চনার ডাল + নেহারি + সালাদ + ড্রিংকস + পানি", image: ph("মেজবানি স্পেশাল", 900, 500) }
-      ];
 
       const Logo = () => (
         <div className="flex items-center cursor-pointer" onClick={() => window.scrollTo(0, 0)}>
-          <img src="https://i.ibb.co/vCm5Mz6Q/IMG-1612.jpg" alt="Logo" className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm mr-2" />
-          <span className="text-xl font-bold text-gray-900">ভাত ঘর</span>
+          <img src="https://drive.google.com/uc?export=view&id=13owcagqYDkxZBhoO74kXehtPdviZ1Rij" alt="Logo" className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm mr-2" />
+          <span className="text-xl font-bold text-gray-900"> ভাত ঘর হোটেল রেস্টুরেন্ট এন্ড মিষ্টান্ন </span>
         </div>
       );
 
@@ -201,18 +235,17 @@
               <div className="flex justify-between items-center h-16">
                 <Logo />
 
-                {/* Desktop Nav */}
                 <nav className="hidden md:flex space-x-6">
                   <a href="#home" className="text-gray-900 hover:text-red-600 font-medium">হোম</a>
                   <a href="#menu" className="text-gray-700 hover:text-red-600">মেনু</a>
                   <a href="#specials" className="text-gray-700 hover:text-red-600">অফার</a>
+                  <a href="#complaint" className="text-gray-700 hover:text-red-600 font-medium text-red-600">অভিযোগ বক্স</a>
                   {favorites.length > 0 && <a href="#favorites" className="text-red-600 font-bold">প্রিয় খাবার ({favorites.length})</a>}
                   <a href="#contact" className="text-gray-700 hover:text-red-600">যোগাযোগ</a>
                 </nav>
 
-                {/* Actions */}
                 <div className="flex items-center space-x-4">
-                  <a href={`tel:${phoneNumber}`} className="p-2 text-gray-700 hover:text-red-600">
+                  <a href={`tel:${mainPhoneNumber}`} className="p-2 text-gray-700 hover:text-red-600">
                     <i className="fas fa-phone h-5 w-5 text-xl"></i>
                   </a>
                   <button onClick={handleQuickOrder} className="p-2 text-gray-700 hover:text-red-600 relative">
@@ -224,13 +257,13 @@
                 </div>
               </div>
 
-              {/* Mobile Menu */}
               {isMenuOpen && (
                 <div className="md:hidden py-4 border-t fade-in">
                   <nav className="flex flex-col space-y-4">
                     <a href="#home" className="text-gray-900 hover:text-red-600 font-medium" onClick={() => setIsMenuOpen(false)}>হোম</a>
                     <a href="#menu" className="text-gray-700 hover:text-red-600" onClick={() => setIsMenuOpen(false)}>মেনু</a>
                     <a href="#specials" className="text-gray-700 hover:text-red-600" onClick={() => setIsMenuOpen(false)}>অফার</a>
+                    <a href="#complaint" className="text-red-600 font-medium" onClick={() => setIsMenuOpen(false)}>অভিযোগ বক্স</a>
                     {favorites.length > 0 && <a href="#favorites" className="text-red-600 font-bold" onClick={() => setIsMenuOpen(false)}>প্রিয় খাবার ({favorites.length})</a>}
                     <a href="#contact" className="text-gray-700 hover:text-red-600" onClick={() => setIsMenuOpen(false)}>যোগাযোগ</a>
                   </nav>
@@ -239,7 +272,6 @@
             </div>
           </header>
 
-          {/* Floating WhatsApp */}
           {showFloatingButton && (
             <button onClick={handleQuickOrder} className="fixed bottom-6 right-6 bg-green-500 text-white w-14 h-14 rounded-full shadow-2xl z-50 hover:bg-green-600 flex items-center justify-center float-animation">
               <i className="fab fa-whatsapp text-3xl"></i>
@@ -249,8 +281,8 @@
           {/* Hero */}
           <section id="home" className="bg-gradient-to-r from-red-600 to-red-700 text-white py-20 text-center">
             <div className="max-w-7xl mx-auto px-4">
-              <h1 className="text-4xl md:text-5xl font-bold mb-6 fade-in">ভাত ঘর হোটেল রেস্টুরেন্ট</h1>
-              <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto fade-in">নোয়াখালীর সেরা স্বাদের গন্তব্য</p>
+              <h1 className="text-4xl md:text-5xl font-bold mb-6 fade-in"> ভাত ঘর হোটেল রেস্টুরেন্ট এন্ড মিষ্টান্ন </h1>
+              <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto fade-in">নোয়াখালীর ঘরোয়া স্বাদের গন্তব্য</p>
 
               <div className="flex items-center justify-center gap-2 mb-8 text-yellow-300 bg-red-800 bg-opacity-30 p-3 rounded-lg inline-block">
                 <i className="fas fa-clock"></i>
@@ -264,7 +296,6 @@
             </div>
           </section>
 
-          {/* Order Tracking (Demo) */}
           {showOrderTracking && (
             <section className="py-8 bg-blue-50">
               <div className="max-w-3xl mx-auto px-4">
@@ -326,7 +357,6 @@
             </div>
           </section>
 
-          {/* Favorites Section (Only shows if items saved) */}
           {favorites.length > 0 && (
             <section id="favorites" className="py-16 bg-red-50">
               <div className="max-w-7xl mx-auto px-4">
@@ -413,6 +443,7 @@
                     <img src="https://placehold.co/50x50/e2136e/ffffff?text=bKash" className="w-12 h-12 rounded" alt="bKash" />
                     <div>
                       <p className="font-bold">বিকাশ পেমেন্ট</p>
+                      <p className="text-sm text-gray-700 font-bold">{paymentNumberDisplay}</p>
                       <p className="text-xs text-gray-500">সেন্ড মানি / ক্যাশ আউট</p>
                     </div>
                   </div>
@@ -420,6 +451,7 @@
                     <img src="https://placehold.co/50x50/f7931e/ffffff?text=Nagad" className="w-12 h-12 rounded" alt="Nagad" />
                     <div>
                       <p className="font-bold">নগদ পেমেন্ট</p>
+                      <p className="text-sm text-gray-700 font-bold">{paymentNumberDisplay}</p>
                       <p className="text-xs text-gray-500">সেন্ড মানি / ক্যাশ আউট</p>
                     </div>
                   </div>
@@ -434,6 +466,34 @@
             </div>
           </section>
 
+          {/* Complaint Box */}
+          <section id="complaint" className="py-16 bg-white">
+            <div className="max-w-3xl mx-auto px-4">
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold">অভিযোগ বক্স</h2>
+                <p className="text-gray-600 mt-2">আপনার যে কোনো অভিযোগ/পরামর্শ লিখে জমা দিন।</p>
+              </div>
+
+              <div className="bg-gray-50 p-6 rounded-lg border">
+                <form onSubmit={handleComplaintSubmit} className="space-y-4">
+                  <textarea
+                    className="w-full p-3 border rounded focus:ring-2 focus:ring-red-500 outline-none"
+                    rows="5"
+                    placeholder="আপনার অভিযোগ লিখুন..."
+                    value={complaintText}
+                    onChange={(e) => setComplaintText(e.target.value)}
+                    required
+                  ></textarea>
+
+                  <button type="submit" className="w-full bg-red-600 text-white py-3 rounded font-bold hover:bg-red-700 transition-colors flex justify-center items-center gap-2">
+                    <i className="fab fa-whatsapp"></i> অভিযোগ জমা দিন
+                  </button>
+                  <p className="text-xs text-center text-gray-500">আপনার অভিযোগটি আমাদের কাছে গোপনে সংরক্ষিত থাকবে।</p>
+                </form>
+              </div>
+            </div>
+          </section>
+
           {/* Contact & Order Form */}
           <section id="contact" className="py-16 bg-white">
             <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -444,7 +504,7 @@
                     <i className="fas fa-map-marker-alt text-red-600 text-xl mt-1"></i>
                     <div>
                       <p className="font-bold">ঠিকানা</p>
-                      <p className="text-gray-600">এম রহমান প্লাজা, মেইন রোড, মাইজদী, নোয়াখালী</p>
+                      <p className="text-gray-600">এম রহমান প্লাজা, মেইন রোড, মাইজদী, নোয়াখালী ( নোয়াখালী সুপার মার্কেটের পশ্চিমে মেইন রোডের পশ্চিম পাশে )</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
@@ -465,7 +525,7 @@
                     <a href={facebookPageUrl} target="_blank" className="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center hover:scale-110 transition-transform">
                       <i className="fab fa-facebook-f"></i>
                     </a>
-                    <a href={`https://wa.me/${phoneNumber}`} target="_blank" className="w-10 h-10 bg-green-500 text-white rounded-full flex items-center justify-center hover:scale-110 transition-transform">
+                    <a href={`https://wa.me/${mainPhoneNumber}`} target="_blank" className="w-10 h-10 bg-green-500 text-white rounded-full flex items-center justify-center hover:scale-110 transition-transform">
                       <i className="fab fa-whatsapp"></i>
                     </a>
                   </div>
@@ -513,9 +573,9 @@
               <p className="text-gray-400 mb-4">নোয়াখালীর ঐতিহ্যবাহী স্বাদ</p>
               <div className="flex justify-center gap-4 mb-6">
                 <a href={facebookPageUrl} target="_blank" className="text-blue-400 text-2xl"><i className="fab fa-facebook"></i></a>
-                <a href={`https://wa.me/${phoneNumber}`} target="_blank" className="text-green-400 text-2xl"><i className="fab fa-whatsapp"></i></a>
+                <a href={`https://wa.me/${mainPhoneNumber}`} target="_blank" className="text-green-400 text-2xl"><i className="fab fa-whatsapp"></i></a>
               </div>
-              <p className="text-sm text-gray-500">&copy; {new Date().getFullYear()} ভাত ঘর হোটেল। সর্বস্বত্ব সংরক্ষিত।</p>
+              <p className="text-sm text-gray-500">&copy; {new Date().getFullYear()} ভাত ঘর হোটেল রেস্টুরেন্ট এন্ড মিষ্টান্ন। সর্বস্বত্ব সংরক্ষিত।</p>
             </div>
           </footer>
         </div>
