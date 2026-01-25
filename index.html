@@ -79,7 +79,6 @@
       const [showFloatingButton, setShowFloatingButton] = useState(false);
       const [favorites, setFavorites] = useState([]);
       const [showOrderTracking, setShowOrderTracking] = useState(false);
-      const [complaintText, setComplaintText] = useState("");
 
       // Contact Info Variables
       const mainPhoneNumber = "8801336613481"; // For WhatsApp Orders
@@ -90,7 +89,10 @@
       const facebookPageUrl = "https://www.facebook.com/vatghorhotelonline"; 
       const facebookProfileUrl = "https://www.facebook.com/share/14To9YXbtAj/?mibextid=wwXIfr";
       const emailAddress = "vatghorhotelonline@gmail.com";
-      const googleMapLink = "https://www.google.com/maps/search/?api=1&query=7MJHV39W+WM"; // Plus Code Link
+      
+      // Google Map Link using EXACT Plus Code provided
+      // %2B replaces + in URL encoding
+      const googleMapLink = "https://www.google.com/maps/search/?api=1&query=7MJHV39W%2BWM"; 
       
       // Web3Forms Access Key
       const web3FormsAccessKey = "8cdbce0c-b8f4-4ded-8993-64533348a37b"; 
@@ -158,65 +160,6 @@
         setShowOrderTracking(true);
         Swal.fire({ icon: 'success', title: 'অর্ডার পাঠানো হয়েছে!', text: 'আপনার অর্ডারটি প্রসেসিং হচ্ছে।', timer: 2000 });
         setFormData({ name: "", phone: "", address: "", details: "", payment: "cod" });
-      };
-
-      // Dual Complaint System Logic (Fixed with Web3Forms)
-      const handleComplaintSubmit = (e) => {
-        e.preventDefault();
-        const msg = complaintText.trim();
-        if (!msg) {
-          Swal.fire({ icon: 'warning', title: 'খালি আছে', text: 'অনুগ্রহ করে অভিযোগ লিখুন।' });
-          return;
-        }
-
-        Swal.fire({
-          title: 'কিভাবে পাঠাতে চান?',
-          text: "আপনার পছন্দ নির্বাচন করুন",
-          icon: 'question',
-          showDenyButton: true,
-          showCancelButton: true,
-          confirmButtonText: '<i class="fab fa-whatsapp"></i> WhatsApp-এ পাঠান',
-          denyButtonText: '<i class="fas fa-user-secret"></i> গোপনে পাঠান (ইমেইল)',
-          cancelButtonText: 'বাতিল',
-          confirmButtonColor: '#25D366',
-          denyButtonColor: '#6b7280'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            // Option 1: WhatsApp
-            const text = `*কাস্টমার অভিযোগ/মতামত*\n------------------\n${msg}`;
-            window.open(`https://wa.me/${complaintWhatsApp}?text=${encodeURIComponent(text)}`, "_blank");
-          } else if (result.isDenied) {
-            // Option 2: Email (Anonymous) using Web3Forms
-            Swal.fire({ title: 'পাঠানো হচ্ছে...', didOpen: () => Swal.showLoading() });
-            
-            const form = document.createElement("form");
-            const formData = new FormData(form);
-            formData.append("access_key", web3FormsAccessKey);
-            formData.append("message", msg);
-            formData.append("subject", "New Anonymous Complaint");
-
-            fetch("https://api.web3forms.com/submit", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "application/json"
-                },
-                body: JSON.stringify(Object.fromEntries(formData))
-            })
-            .then(async (response) => {
-                const json = await response.json();
-                if (response.status == 200) {
-                    Swal.fire({ icon: 'success', title: 'পাঠানো হয়েছে!', text: 'আপনার মতামত গোপনভাবে মালিকের ইমেইলে পৌঁছে গেছে। ধন্যবাদ!', timer: 3000 });
-                    setComplaintText("");
-                } else {
-                    Swal.fire({ icon: 'error', title: 'সমস্যা হয়েছে', text: json.message });
-                }
-            })
-            .catch(error => {
-                Swal.fire({ icon: 'error', title: 'দুঃখিত', text: 'নেটওয়ার্ক সমস্যা। আবার চেষ্টা করুন।' });
-            });
-          }
-        });
       };
 
       const handleImageError = (e) => {
@@ -557,20 +500,34 @@
               </div>
 
               <div className="bg-gray-50 p-6 rounded-lg border">
-                <form onSubmit={handleComplaintSubmit} className="space-y-4">
+                {/* Fixed Complaint Form - Using HTML Standard Submission for reliability */}
+                <form 
+                  action="https://api.web3forms.com/submit" 
+                  method="POST" 
+                  target="_blank"
+                  className="space-y-4"
+                >
+                  <input type="hidden" name="access_key" value={web3FormsAccessKey} />
+                  <input type="hidden" name="subject" value="New Complaint from Vat Ghor Website" />
+                  <input type="hidden" name="from_name" value="Anonymous Customer" />
+                  
                   <textarea
                     className="w-full p-3 border rounded focus:ring-2 focus:ring-red-500 outline-none"
                     rows="5"
+                    name="message"
                     placeholder="আপনার অভিযোগ লিখুন..."
-                    value={complaintText}
-                    onChange={(e) => setComplaintText(e.target.value)}
                     required
                   ></textarea>
 
                   <button type="submit" className="w-full bg-red-600 text-white py-3 rounded font-bold hover:bg-red-700 transition-colors flex justify-center items-center gap-2">
-                     জমা দিন
+                     জমা দিন (ইমেইল)
                   </button>
-                  <p className="text-xs text-center text-gray-500">গোপনীয়তা নিশ্চিত করা হবে।</p>
+                  <div className="text-center pt-2">
+                     <p className="text-xs text-gray-500 pb-2">অথবা WhatsApp এ সরাসরি জানান</p>
+                     <a href={`https://wa.me/${complaintWhatsApp}`} target="_blank" className="inline-block px-4 py-1 border border-green-500 text-green-600 rounded-full text-sm hover:bg-green-50">
+                        <i className="fab fa-whatsapp"></i> WhatsApp
+                     </a>
+                  </div>
                 </form>
               </div>
             </div>
