@@ -41,6 +41,22 @@
     @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
     .float-animation { animation: float 3s ease-in-out infinite; }
     
+    /* Hero Section Gradient Background */
+    .hero-bg {
+        background: linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%);
+        position: relative;
+        overflow: hidden;
+    }
+    .hero-bg::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: url('https://img.freepik.com/free-photo/top-view-table-full-delicious-food-composition_23-2149141353.jpg') center/cover;
+        opacity: 0.15; /* Subtle food background pattern */
+        z-index: 0;
+    }
+    .hero-content { position: relative; z-index: 10; }
+
     /* Order tracking animation */
     @keyframes pulse-ring { 0% { transform: scale(0.33); } 80%, 100% { opacity: 0; } }
     .pulse-ring { position: absolute; width: 100%; height: 100%; border-radius: 50%; animation: pulse-ring 1.25s cubic-bezier(0.215, 0.61, 0.355, 1) infinite; box-shadow: 0 0 0 6px rgba(239, 68, 68, 0.4); top: 0; left: 0; }
@@ -74,10 +90,10 @@
       const facebookPageUrl = "https://www.facebook.com/vatghorhotelonline"; 
       const facebookProfileUrl = "https://www.facebook.com/share/14To9YXbtAj/?mibextid=wwXIfr";
       const emailAddress = "vatghorhotelonline@gmail.com";
+      const googleMapLink = "https://www.google.com/maps/search/?api=1&query=7MJHV39W+WM"; // Plus Code Link
       
-      // Formspree (Important: You need to activate this by sending first message)
-      // I'm using the standard format that triggers activation email to your address
-      const formspreeAction = "https://formspree.io/f/mqakevjw"; 
+      // Web3Forms Access Key
+      const web3FormsAccessKey = "8cdbce0c-b8f4-4ded-8993-64533348a37b"; 
 
       useEffect(() => {
         const savedFavs = localStorage.getItem('vatghor_favorites');
@@ -144,7 +160,7 @@
         setFormData({ name: "", phone: "", address: "", details: "", payment: "cod" });
       };
 
-      // Dual Complaint System Logic
+      // Dual Complaint System Logic (Fixed with Web3Forms)
       const handleComplaintSubmit = (e) => {
         e.preventDefault();
         const msg = complaintText.trim();
@@ -160,7 +176,7 @@
           showDenyButton: true,
           showCancelButton: true,
           confirmButtonText: '<i class="fab fa-whatsapp"></i> WhatsApp-এ পাঠান',
-          denyButtonText: '<i class="fas fa-user-secret"></i> গোপনে পাঠান (নাম্বার গোপন থাকবে)',
+          denyButtonText: '<i class="fas fa-user-secret"></i> গোপনে পাঠান (ইমেইল)',
           cancelButtonText: 'বাতিল',
           confirmButtonColor: '#25D366',
           denyButtonColor: '#6b7280'
@@ -170,29 +186,35 @@
             const text = `*কাস্টমার অভিযোগ/মতামত*\n------------------\n${msg}`;
             window.open(`https://wa.me/${complaintWhatsApp}?text=${encodeURIComponent(text)}`, "_blank");
           } else if (result.isDenied) {
-            // Option 2: Email (Anonymous) using Formspree logic
-            const formData = new FormData();
+            // Option 2: Email (Anonymous) using Web3Forms
+            Swal.fire({ title: 'পাঠানো হচ্ছে...', didOpen: () => Swal.showLoading() });
+            
+            const form = document.createElement("form");
+            const formData = new FormData(form);
+            formData.append("access_key", web3FormsAccessKey);
             formData.append("message", msg);
-            formData.append("_subject", "New Complaint (Anonymous)");
-            
-            // To make this work without backend, we submit a hidden form dynamically
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = `https://formspree.io/f/${emailAddress}`; // Redirects to activation first time
-            form.target = '_blank';
-            
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'message';
-            input.value = msg;
-            form.appendChild(input);
-            
-            document.body.appendChild(form);
-            form.submit();
-            document.body.removeChild(form);
+            formData.append("subject", "New Anonymous Complaint");
 
-            Swal.fire({ icon: 'success', title: 'পাঠানো হয়েছে', text: 'ইমেইল উইন্ডো চেক করুন অথবা কনফার্মেশন দেখুন।', timer: 3000 });
-            setComplaintText("");
+            fetch("https://api.web3forms.com/submit", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify(Object.fromEntries(formData))
+            })
+            .then(async (response) => {
+                const json = await response.json();
+                if (response.status == 200) {
+                    Swal.fire({ icon: 'success', title: 'পাঠানো হয়েছে!', text: 'আপনার মতামত গোপনভাবে মালিকের ইমেইলে পৌঁছে গেছে। ধন্যবাদ!', timer: 3000 });
+                    setComplaintText("");
+                } else {
+                    Swal.fire({ icon: 'error', title: 'সমস্যা হয়েছে', text: json.message });
+                }
+            })
+            .catch(error => {
+                Swal.fire({ icon: 'error', title: 'দুঃখিত', text: 'নেটওয়ার্ক সমস্যা। আবার চেষ্টা করুন।' });
+            });
           }
         });
       };
@@ -278,7 +300,8 @@
       const Logo = () => (
         <div className="flex items-center cursor-pointer" onClick={() => window.scrollTo(0, 0)}>
           <img src={imgBase + "logo.jpeg"} onError={handleImageError} alt="Logo" className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm mr-2" />
-          <span className="text-xl font-bold text-gray-900"> ভাত ঘর হোটেল রেস্টুরেন্ট এন্ড মিষ্টান্ন </span>
+          <span className="text-xl font-bold text-gray-900 hidden md:inline"> ভাত ঘর হোটেল রেস্টুরেন্ট এন্ড মিষ্টান্ন </span>
+          <span className="text-xl font-bold text-gray-900 md:hidden"> ভাত ঘর হোটেল রেস্টুরেন্ট এন্ড মিষ্টান্ন </span>
         </div>
       );
 
@@ -333,20 +356,24 @@
             </button>
           )}
 
-          {/* Hero */}
-          <section id="home" className="bg-gradient-to-r from-red-600 to-red-700 text-white py-20 text-center">
-            <div className="max-w-7xl mx-auto px-4">
-              <h1 className="text-4xl md:text-5xl font-bold mb-6 fade-in"> ভাত ঘর হোটেল রেস্টুরেন্ট এন্ড মিষ্টান্ন </h1>
-              <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto fade-in">নোয়াখালীর ঘরোয়া স্বাদের গন্তব্য</p>
+          {/* Hero Section (Updated Background) */}
+          <section id="home" className="hero-bg text-white py-24 text-center">
+            <div className="hero-content max-w-7xl mx-auto px-4">
+              <h1 className="text-3xl md:text-5xl font-extrabold mb-6 fade-in drop-shadow-md tracking-wide"> ভাত ঘর হোটেল রেস্টুরেন্ট এন্ড মিষ্টান্ন </h1>
+              <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto fade-in font-light">নোয়াখালীর ঘরোয়া স্বাদের গন্তব্য</p>
 
-              <div className="flex items-center justify-center gap-2 mb-8 text-yellow-300 bg-red-800 bg-opacity-30 p-3 rounded-lg inline-block">
+              <div className="flex items-center justify-center gap-2 mb-10 text-yellow-300 bg-black bg-opacity-40 px-6 py-2 rounded-full inline-block backdrop-blur-sm border border-yellow-500 border-opacity-30">
                 <i className="fas fa-clock"></i>
                 <span className="font-bold text-lg">খোলা: সকাল ৭:০০ - রাত ১২:০০</span>
               </div>
 
-              <div className="flex justify-center gap-4">
-                <a href="#contact" className="bg-white text-red-600 px-8 py-3 rounded-lg font-bold hover:bg-gray-100 shadow-lg">অর্ডার করুন</a>
-                <a href="#menu" className="border-2 border-white text-white px-8 py-3 rounded-lg font-bold hover:bg-white hover:text-red-600">মেনু</a>
+              <div className="flex justify-center gap-6">
+                <a href="#contact" className="bg-white text-red-700 px-8 py-3 rounded-full font-bold hover:bg-gray-100 shadow-xl transition-transform hover:scale-105 border-2 border-white">
+                  <i className="fas fa-utensils mr-2"></i> অর্ডার করুন
+                </a>
+                <a href="#menu" className="bg-transparent border-2 border-yellow-400 text-yellow-400 px-8 py-3 rounded-full font-bold hover:bg-yellow-400 hover:text-red-900 shadow-xl transition-transform hover:scale-105">
+                  মেনু দেখুন
+                </a>
               </div>
             </div>
           </section>
@@ -556,10 +583,13 @@
                 <h2 className="text-2xl font-bold mb-6">যোগাযোগ</h2>
                 <div className="space-y-4">
                   <div className="flex items-start gap-4">
-                    <i className="fas fa-map-marker-alt text-red-600 text-xl mt-1"></i>
+                    <a href={googleMapLink} target="_blank" className="hover:scale-110 transition-transform"><i className="fas fa-map-marker-alt text-red-600 text-xl mt-1"></i></a>
                     <div>
                       <p className="font-bold">ঠিকানা</p>
-                      <p className="text-gray-600">এম রহমান প্লাজা, মেইন রোড, মাইজদী, নোয়াখালী ( নোয়াখালী সুপার মার্কেটের পশ্চিমে মেইন রোডের পশ্চিম পাশে )</p>
+                      <a href={googleMapLink} target="_blank" className="hover:underline">
+                        <p className="text-gray-900 font-semibold text-lg">এম রহমান প্লাজা, মেইন রোড, মাইজদী, নোয়াখালী</p>
+                        <p className="text-gray-500 text-sm mt-1">নোয়াখালী সুপার মার্কেটের পশ্চিমে মেইন রোডের পশ্চিম পাশে</p>
+                      </a>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
@@ -650,7 +680,7 @@
           {/* Footer */}
           <footer className="bg-gray-900 text-white py-8 text-center">
             <div className="max-w-7xl mx-auto px-4">
-              <h2 className="text-2xl font-bold mb-2">ভাত ঘর</h2>
+              <h2 className="text-2xl font-bold mb-2">ভাত ঘর হোটেল রেস্টুরেন্ট এন্ড মিষ্টান্ন</h2>
               <p className="text-gray-400 mb-4">নোয়াখালীর ঐতিহ্যবাহী স্বাদ</p>
               <div className="flex justify-center gap-4 mb-6">
                 <a href={facebookPageUrl} target="_blank" className="text-blue-400 text-2xl hover:scale-110 transition-transform"><i className="fab fa-facebook"></i></a>
