@@ -65,11 +65,19 @@
       const [showOrderTracking, setShowOrderTracking] = useState(false);
       const [complaintText, setComplaintText] = useState("");
 
-      // Numbers
-      const mainPhoneNumber = "8801336613481"; // For Orders
+      // Contact Info Variables
+      const mainPhoneNumber = "8801336613481"; // For WhatsApp Orders
       const paymentNumberDisplay = "01336-613481"; // Displayed on UI
       const complaintWhatsApp = "8801771514600"; // Hidden complaint number
-      const facebookPageUrl = "https://www.facebook.com/share/1BFJVsuQf9/?mibextid=wwXIfr";
+      
+      // Social Links
+      const facebookPageUrl = "https://www.facebook.com/vatghorhotelonline"; 
+      const facebookProfileUrl = "https://www.facebook.com/share/14To9YXbtAj/?mibextid=wwXIfr";
+      const emailAddress = "vatghorhotelonline@gmail.com";
+      
+      // Formspree (Important: You need to activate this by sending first message)
+      // I'm using the standard format that triggers activation email to your address
+      const formspreeAction = "https://formspree.io/f/mqakevjw"; 
 
       useEffect(() => {
         const savedFavs = localStorage.getItem('vatghor_favorites');
@@ -136,6 +144,7 @@
         setFormData({ name: "", phone: "", address: "", details: "", payment: "cod" });
       };
 
+      // Dual Complaint System Logic
       const handleComplaintSubmit = (e) => {
         e.preventDefault();
         const msg = complaintText.trim();
@@ -143,13 +152,51 @@
           Swal.fire({ icon: 'warning', title: 'খালি আছে', text: 'অনুগ্রহ করে অভিযোগ লিখুন।' });
           return;
         }
-        const text = `*কাস্টমার অভিযোগ/মতামত*\n------------------\n${msg}`;
-        window.open(`https://wa.me/${complaintWhatsApp}?text=${encodeURIComponent(text)}`, "_blank");
-        Swal.fire({ icon: 'success', title: 'জমা হয়েছে', text: 'আপনার মতামত গ্রহণ করা হয়েছে। ধন্যবাদ!', timer: 2000, showConfirmButton: false });
-        setComplaintText("");
+
+        Swal.fire({
+          title: 'কিভাবে পাঠাতে চান?',
+          text: "আপনার পছন্দ নির্বাচন করুন",
+          icon: 'question',
+          showDenyButton: true,
+          showCancelButton: true,
+          confirmButtonText: '<i class="fab fa-whatsapp"></i> WhatsApp-এ পাঠান',
+          denyButtonText: '<i class="fas fa-user-secret"></i> গোপনে পাঠান (নাম্বার গোপন থাকবে)',
+          cancelButtonText: 'বাতিল',
+          confirmButtonColor: '#25D366',
+          denyButtonColor: '#6b7280'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // Option 1: WhatsApp
+            const text = `*কাস্টমার অভিযোগ/মতামত*\n------------------\n${msg}`;
+            window.open(`https://wa.me/${complaintWhatsApp}?text=${encodeURIComponent(text)}`, "_blank");
+          } else if (result.isDenied) {
+            // Option 2: Email (Anonymous) using Formspree logic
+            const formData = new FormData();
+            formData.append("message", msg);
+            formData.append("_subject", "New Complaint (Anonymous)");
+            
+            // To make this work without backend, we submit a hidden form dynamically
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `https://formspree.io/f/${emailAddress}`; // Redirects to activation first time
+            form.target = '_blank';
+            
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'message';
+            input.value = msg;
+            form.appendChild(input);
+            
+            document.body.appendChild(form);
+            form.submit();
+            document.body.removeChild(form);
+
+            Swal.fire({ icon: 'success', title: 'পাঠানো হয়েছে', text: 'ইমেইল উইন্ডো চেক করুন অথবা কনফার্মেশন দেখুন।', timer: 3000 });
+            setComplaintText("");
+          }
+        });
       };
 
-      // Helper function to handle image loading errors (Tries .jpg if .jpeg fails)
       const handleImageError = (e) => {
         const currentSrc = e.target.src;
         if (currentSrc.endsWith('.jpeg')) {
@@ -159,18 +206,17 @@
         }
       };
 
-      // Updated Menu Items with .jpeg extension (standard for mobile uploads)
       const menuItems = [
         { id: 1, name: "শীতকালীন হাঁস স্পেশাল", price: 300, category: "special", image: imgBase + "duck.jpeg", description: "হাঁস ভুনা + খিচুড়ি + সালাদ + ড্রিংকস + পানি", time: "45 min" },
         { id: 2, name: "শুক্রবার মেজবানি স্পেশাল", price: 350, category: "special", image: imgBase + "mejbani.jpeg", description: "বিফ + রাইস + চনার ডাল + নেহারি + সালাদ + ড্রিংকস + পানি", time: "50 min" },
         { id: 3, name: "সাদা ভাত", price: 15, category: "rice", image: imgBase + "rice.jpeg", description: "ফ্রেশ ও সুগন্ধি সাদা ভাত", time: "20 min" },
         { id: 4, name: "মোরগ পোলাউ", price: 160, category: "rice", image: imgBase + "polau.jpeg", description: "মসলাদার মোরগ পোলাউ", time: "30 min" },
         { id: 5, name: "স্পেশাল কাচ্চি", price: 300, category: "rice", image: imgBase + "kacchi.jpeg", description: "স্পেশাল কাচ্চি বিরিয়ানি", time: "35 min" },
-        { id: 6, name: "স্পেশাল ভুনা খিচুড়ি", price: 280, category: "rice", image: imgBase + "bhuna_khichuri.jpeg", description: "স্পেশাল ভুনা খিচুড়ি", time: "30 min" },
-        { id: 7, name: "বিফ খিচুড়ি", price: 280, category: "rice", image: imgBase + "beef_khichuri.jpeg", description: "বিফ খিচুড়ি", time: "30 min" },
-        { id: 8, name: "চিকেন খিচুড়ি", price: 180, category: "rice", image: imgBase + "chicken_khichuri.jpeg", description: "চিকেন খিচুড়ি", time: "30 min" },
-        { id: 9, name: "মাটন খিচুড়ি", price: 300, category: "rice", image: imgBase + "mutton_khichuri.jpeg", description: "মাটন খিচুড়ি", time: "40 min" },
-        { id: 10, name: "ভেজিটেবল খিচুড়ি", price: 120, category: "rice", image: imgBase + "veg_khichuri.jpeg", description: "সবজি খিচুড়ি", time: "25 min" },
+        { id: 6, name: "স্পেশাল ভুনা খিচুড়ি", price: 280, category: "rice", image: imgBase + "bhuna_khichuri.jpeg", description: "স্পেশাল ভুনা খিচুড়ি", time: "30 min" },
+        { id: 7, name: "বিফ খিচুড়ি", price: 280, category: "rice", image: imgBase + "beef_khichuri.jpeg", description: "বিফ খিচুড়ি", time: "30 min" },
+        { id: 8, name: "চিকেন খিচুড়ি", price: 180, category: "rice", image: imgBase + "chicken_khichuri.jpeg", description: "চিকেন খিচুড়ি", time: "30 min" },
+        { id: 9, name: "মাটন খিচুড়ি", price: 300, category: "rice", image: imgBase + "mutton_khichuri.jpeg", description: "মাটন খিচুড়ি", time: "40 min" },
+        { id: 10, name: "ভেজিটেবল খিচুড়ি", price: 120, category: "rice", image: imgBase + "veg_khichuri.jpeg", description: "সবজি খিচুড়ি", time: "25 min" },
         { id: 11, name: "বিফ ভুনা", price: 200, category: "meat", image: imgBase + "beef_bhuna.jpeg", description: "মসলাদার বিফ ভুনা", time: "30 min" },
         { id: 12, name: "বিফ কালা ভুনা", price: 220, category: "meat", image: imgBase + "kala_bhuna.jpeg", description: "কালা ভুনা", time: "35 min" },
         { id: 13, name: "চিকেন রোস্ট", price: 120, category: "meat", image: imgBase + "chicken_roast.jpeg", description: "চিকেন রোস্ট", time: "25 min" },
@@ -181,7 +227,7 @@
         { id: 18, name: "চিকেন চাপ", price: 150, category: "meat", image: imgBase + "chicken_chap.jpeg", description: "চিকেন চাপ", time: "20 min" },
         { id: 19, name: "বিফ চাপ", price: 180, category: "meat", image: imgBase + "beef_chap.jpeg", description: "বিফ চাপ", time: "25 min" },
         { id: 20, name: "ইলিশ", price: "বাজার দর", category: "fish", image: imgBase + "ilish.jpeg", description: "তাজা ইলিশ মাছ", time: "40 min" },
-        { id: 21, name: "বোয়াল", price: "বাজার দর", category: "fish", image: imgBase + "boal.jpeg", description: "বোয়াল মাছ ভুনা", time: "35 min" },
+        { id: 21, name: "বোয়াল", price: "বাজার দর", category: "fish", image: imgBase + "boal.jpeg", description: "বোয়াল মাছ ভুনা", time: "35 min" },
         { id: 22, name: "রুই", price: 180, category: "fish", image: imgBase + "rui.jpeg", description: "রুই মাছ ভুনা", time: "30 min" },
         { id: 23, name: "শিং", price: 250, category: "fish", image: imgBase + "shing.jpeg", description: "শিং মাছ ভুনা", time: "30 min" },
         { id: 24, name: "পাবদা", price: 220, category: "fish", image: imgBase + "pabda.jpeg", description: "পাবদা মাছের ঝোল", time: "25 min" },
@@ -196,7 +242,7 @@
         { id: 33, name: "নান রুটি", price: 30, category: "bread", image: imgBase + "nan.jpeg", description: "নান রুটি", time: "15 min" },
         { id: 34, name: "চমুচা", price: 10, category: "bread", image: imgBase + "chomucha.jpeg", description: "গরম চমুচা", time: "10 min" },
         { id: 35, name: "সিংগারা", price: 10, category: "bread", image: imgBase + "singara.jpeg", description: "গরম সিংগারা", time: "10 min" },
-        { id: 36, name: "দই চিড়া", price: 80, category: "dessert", image: imgBase + "doi_chira.jpeg", description: "দই চিড়া", time: "15 min" },
+        { id: 36, name: "দই চিড়া", price: 80, category: "dessert", image: imgBase + "doi_chira.jpeg", description: "দই চিড়া", time: "15 min" },
         { id: 37, name: "লাচ্ছি", price: 60, category: "dessert", image: imgBase + "lacchi.jpeg", description: "লাচ্ছি", time: "10 min" },
         { id: 38, name: "ফালুদা", price: 100, category: "dessert", image: imgBase + "faluda.jpeg", description: "ফালুদা", time: "15 min" },
         { id: 39, name: "জুস", price: 50, category: "dessert", image: imgBase + "juice.jpeg", description: "ফ্রেশ জুস", time: "10 min" },
@@ -291,7 +337,7 @@
           <section id="home" className="bg-gradient-to-r from-red-600 to-red-700 text-white py-20 text-center">
             <div className="max-w-7xl mx-auto px-4">
               <h1 className="text-4xl md:text-5xl font-bold mb-6 fade-in"> ভাত ঘর হোটেল রেস্টুরেন্ট এন্ড মিষ্টান্ন </h1>
-              <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto fade-in">নোয়াখালীর ঘরোয়া স্বাদের গন্তব্য</p>
+              <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto fade-in">নোয়াখালীর ঘরোয়া স্বাদের গন্তব্য</p>
 
               <div className="flex items-center justify-center gap-2 mb-8 text-yellow-300 bg-red-800 bg-opacity-30 p-3 rounded-lg inline-block">
                 <i className="fas fa-clock"></i>
@@ -468,7 +514,7 @@
                     <i className="fas fa-money-bill-wave text-green-500 text-3xl"></i>
                     <div>
                       <p className="font-bold">ক্যাশ অন ডেলিভারি</p>
-                      <p className="text-xs text-gray-500">খাবার পেয়ে টাকা দিন</p>
+                      <p className="text-xs text-gray-500">খাবার পেয়ে টাকা দিন</p>
                     </div>
                   </div>
                </div>
@@ -495,15 +541,15 @@
                   ></textarea>
 
                   <button type="submit" className="w-full bg-red-600 text-white py-3 rounded font-bold hover:bg-red-700 transition-colors flex justify-center items-center gap-2">
-                    <i className="fab fa-whatsapp"></i> অভিযোগ জমা দিন
+                     জমা দিন
                   </button>
-                  <p className="text-xs text-center text-gray-500">আপনার অভিযোগটি আমাদের কাছে গোপনে সংরক্ষিত থাকবে।</p>
+                  <p className="text-xs text-center text-gray-500">গোপনীয়তা নিশ্চিত করা হবে।</p>
                 </form>
               </div>
             </div>
           </section>
 
-          {/* Contact & Order Form */}
+          {/* Contact & Order Form with QR Code */}
           <section id="contact" className="py-16 bg-white">
             <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-12">
               <div>
@@ -513,13 +559,13 @@
                     <i className="fas fa-map-marker-alt text-red-600 text-xl mt-1"></i>
                     <div>
                       <p className="font-bold">ঠিকানা</p>
-                      <p className="text-gray-600">এম রহমান প্লাজা, মেইন রোড, মাইজদী, নোয়াখালী   নোয়াখালী সুপার মার্কেটের পশ্চিমে মেইন রোডের পশ্চিম পাশে</p>
+                      <p className="text-gray-600">এম রহমান প্লাজা, মেইন রোড, মাইজদী, নোয়াখালী ( নোয়াখালী সুপার মার্কেটের পশ্চিমে মেইন রোডের পশ্চিম পাশে )</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
                     <i className="fas fa-clock text-red-600 text-xl mt-1"></i>
                     <div>
-                      <p className="font-bold">খোলার সময়</p>
+                      <p className="font-bold">খোলার সময়</p>
                       <p className="text-gray-600">সকাল ৭:০০ - রাত ১২:০০ (প্রতিদিন)</p>
                     </div>
                   </div>
@@ -530,13 +576,39 @@
                       <p className="text-gray-600">০১৩৩৬-৬১৩৪৮১</p>
                     </div>
                   </div>
+                  <div className="flex items-start gap-4">
+                    <i className="fas fa-envelope text-red-600 text-xl mt-1"></i>
+                    <div>
+                      <p className="font-bold">ইমেইল</p>
+                      <p className="text-gray-600 break-all">{emailAddress}</p>
+                    </div>
+                  </div>
+                  
+                  {/* Social Links */}
                   <div className="flex gap-4 mt-6">
                     <a href={facebookPageUrl} target="_blank" className="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center hover:scale-110 transition-transform">
                       <i className="fab fa-facebook-f"></i>
                     </a>
+                    <a href={facebookProfileUrl} target="_blank" className="w-10 h-10 bg-blue-500 text-white rounded-full flex items-center justify-center hover:scale-110 transition-transform">
+                      <i className="fas fa-user"></i>
+                    </a>
                     <a href={`https://wa.me/${mainPhoneNumber}`} target="_blank" className="w-10 h-10 bg-green-500 text-white rounded-full flex items-center justify-center hover:scale-110 transition-transform">
                       <i className="fab fa-whatsapp"></i>
                     </a>
+                    <a href={`mailto:${emailAddress}`} className="w-10 h-10 bg-red-500 text-white rounded-full flex items-center justify-center hover:scale-110 transition-transform">
+                      <i className="fas fa-envelope"></i>
+                    </a>
+                  </div>
+
+                  {/* QR Code Display Section */}
+                  <div className="mt-8 p-4 bg-gray-50 border border-gray-200 rounded-lg inline-block text-center">
+                    <p className="text-sm font-bold text-gray-700 mb-2">বন্ধুদের সাথে শেয়ার করতে স্ক্যান করুন</p>
+                    <img 
+                      src="https://user-gen-media-assets.s3.amazonaws.com/seedream_images/dffd6a44-d857-4709-8227-f1a417e80994.png" 
+                      alt="Website QR Code" 
+                      className="w-32 h-32 mx-auto border-2 border-white shadow-sm"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">vatghorhotelonline.com</p>
                   </div>
                 </div>
               </div>
@@ -578,11 +650,13 @@
           {/* Footer */}
           <footer className="bg-gray-900 text-white py-8 text-center">
             <div className="max-w-7xl mx-auto px-4">
-              <h2 className="text-2xl font-bold mb-2">ভাত ঘর হোটেল রেস্টুরেন্ট এন্ড মিষ্টান্ন</h2>
-              <p className="text-gray-400 mb-4">মায়ের হাতের সেই পুরনো রান্নার স্বাদ</p>
+              <h2 className="text-2xl font-bold mb-2">ভাত ঘর</h2>
+              <p className="text-gray-400 mb-4">নোয়াখালীর ঐতিহ্যবাহী স্বাদ</p>
               <div className="flex justify-center gap-4 mb-6">
-                <a href={facebookPageUrl} target="_blank" className="text-blue-400 text-2xl"><i className="fab fa-facebook"></i></a>
-                <a href={`https://wa.me/${mainPhoneNumber}`} target="_blank" className="text-green-400 text-2xl"><i className="fab fa-whatsapp"></i></a>
+                <a href={facebookPageUrl} target="_blank" className="text-blue-400 text-2xl hover:scale-110 transition-transform"><i className="fab fa-facebook"></i></a>
+                <a href={facebookProfileUrl} target="_blank" className="text-blue-500 text-2xl hover:scale-110 transition-transform"><i className="fas fa-user"></i></a>
+                <a href={`https://wa.me/${mainPhoneNumber}`} target="_blank" className="text-green-400 text-2xl hover:scale-110 transition-transform"><i className="fab fa-whatsapp"></i></a>
+                <a href={`mailto:${emailAddress}`} className="text-red-400 text-2xl hover:scale-110 transition-transform"><i className="fas fa-envelope"></i></a>
               </div>
               <p className="text-sm text-gray-500">&copy; {new Date().getFullYear()} ভাত ঘর হোটেল রেস্টুরেন্ট এন্ড মিষ্টান্ন। সর্বস্বত্ব সংরক্ষিত।</p>
             </div>
